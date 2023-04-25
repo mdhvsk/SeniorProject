@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 public class AccelerometerReader extends Application {
 
     private static final int BAUD_RATE = 9600;
-    private SerialPort serialPort;
+    private SerialPort arduinoPort;
     private Thread serialThread;
-    private boolean isRunning;
+    private boolean stopFlag = false;
     private ScheduledExecutorService scheduledExecutorService;
     private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
@@ -119,80 +120,111 @@ public class AccelerometerReader extends Application {
     }
     @FXML
     void handle_btnStart(ActionEvent event) {
-        System.out.println("Start button clicked");
-        final String serialPortName = findArduinoPort();
-        SerialPort [] AvailablePorts = SerialPort.getCommPorts();
-
-        // use the for loop to print the available serial ports
-        for(SerialPort S : AvailablePorts)
-            System.out.println("\n  " + S.toString());
-
-        try {
-            serialPort = SerialPort.getCommPort("COM6");
-            int BaudRate = 9600;
-            int DataBits = 8;
-            int StopBits = SerialPort.ONE_STOP_BIT;
-            int Parity   = SerialPort.NO_PARITY;
-
-//Sets all serial port parameters at one time
-            serialPort.setComPortParameters(BaudRate,
-                    DataBits,
-                    StopBits,
-                    Parity);
-
-//Set Read Time outs
-            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,
-                    1000,
-                    0);
-            serialPort.openPort();
-        } catch (Exception e){
-            System.out.print("Arduino port not found, check connection");
+//        System.out.println("Start button clicked");
+//        final String serialPortName = findArduinoPort();
+//        SerialPort [] AvailablePorts = SerialPort.getCommPorts();
+//
+//        // use the for loop to print the available serial ports
+//        for(SerialPort S : AvailablePorts)
+//            System.out.println("\n  " + S.toString());
+//
+//        try {
+//            serialPort = SerialPort.getCommPort("COM6");
+//            int BaudRate = 9600;
+//            int DataBits = 8;
+//            int StopBits = SerialPort.ONE_STOP_BIT;
+//            int Parity   = SerialPort.NO_PARITY;
+//
+////Sets all serial port parameters at one time
+//            serialPort.setComPortParameters(BaudRate,
+//                    DataBits,
+//                    StopBits,
+//                    Parity);
+//
+////Set Read Time outs
+//            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,
+//                    1000,
+//                    0);
+//            serialPort.openPort();
+//        } catch (Exception e){
+//            System.out.print("Arduino port not found, check connection");
+//        }
+//
+//        System.out.print(serialPort);
+//
+//
+//        Task<Void> task = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                System.out.println("in call");
+//                while (!isCancelled()) {
+//                    System.out.println("in while l");
+//                    // Read a line of data from the serial port
+//                    byte[] buffer = new byte[serialPort.bytesAvailable()];
+//                    int numRead = serialPort.readBytes(buffer, buffer.length);
+//                    System.out.println(buffer);
+//                    String data = new String(buffer, 0, numRead);
+//
+//
+//                    if (data.isEmpty()) {
+//                        continue;
+//                    }
+//                    System.out.println("hi");
+//                    System.out.println(data);
+//                    // Parse the data and extract the accelerometer values
+//                    String[] values = data.split(",");
+//                    if (values.length != 3) {
+//                        continue;
+//                    }
+//                    double x = Double.parseDouble(values[0]);
+//                    System.out.print(x);
+//                    double y = Double.parseDouble(values[1]);
+//                    double z = Double.parseDouble(values[2]);
+//
+//                    // Add the new accelerometer values to the series and update the chart
+//                    Platform.runLater(() -> {
+//                            System.out.println("In run");
+//                            long now = System.currentTimeMillis();
+//                            xSeries.getData().add(new XYChart.Data<Number, Number>(now, x));
+//                            ySeries.getData().add(new XYChart.Data<Number, Number>(now, y));
+//                            zSeries.getData().add(new XYChart.Data<Number, Number>(now, z));
+//                    });
+//                }
+//                return null;
+//            }
+//        };
+//        new Thread(task).start();
+        SerialPort[] portList = SerialPort.getCommPorts();
+        for (SerialPort port : portList) {
+            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
         }
+        arduinoPort = SerialPort.getCommPort("COM6"); // Replace COM3 with your Arduino's port name
+        arduinoPort.openPort();
+        arduinoPort.setBaudRate(9600);
+        arduinoPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
+        arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        Thread dataThread = new Thread(() -> {
+            Scanner scanner = new Scanner(arduinoPort.getInputStream());
+            while (scanner.hasNextLine() && !stopFlag) {
+                String line = scanner.nextLine();
+                // Process the line of data (e.g., split it into x, y, z values)
+                String[] values = line.split(",");
 
-        System.out.print(serialPort);
+                double x = Double.parseDouble(values[0]);
+                System.out.print(x);
+                double y = Double.parseDouble(values[1]);
+                double z = Double.parseDouble(values[2]);
 
+                long now = System.currentTimeMillis();
+                xSeries.getData().add(new XYChart.Data<Number, Number>(now, x));
+                ySeries.getData().add(new XYChart.Data<Number, Number>(now, y));
+                zSeries.getData().add(new XYChart.Data<Number, Number>(now, z));
 
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                System.out.println("in call");
-                while (!isCancelled()) {
-                    System.out.println("in while l");
-                    // Read a line of data from the serial port
-                    Thread.sleep(100);
-                    byte[] buffer = new byte[serialPort.bytesAvailable()];
-                    System.out.println(buffer);
-                    int numRead = serialPort.readBytes(buffer, buffer.length);
-                    String data = new String(buffer, 0, numRead);
-
-                    if (data.isEmpty()) {
-                        continue;
-                    }
-                    System.out.println("hi");
-                    System.out.println(data);
-                    // Parse the data and extract the accelerometer values
-                    String[] values = data.split(",");
-                    if (values.length != 3) {
-                        continue;
-                    }
-                    double x = Double.parseDouble(values[0]);
-                    System.out.print(x);
-                    double y = Double.parseDouble(values[1]);
-                    double z = Double.parseDouble(values[2]);
-
-                    // Add the new accelerometer values to the series and update the chart
-                    Platform.runLater(() -> {
-                            System.out.println("In run");
-                            long now = System.currentTimeMillis();
-                            xSeries.getData().add(new XYChart.Data<Number, Number>(now, x));
-                            ySeries.getData().add(new XYChart.Data<Number, Number>(now, y));
-                            zSeries.getData().add(new XYChart.Data<Number, Number>(now, z));
-                    });
-                }
-                return null;
             }
-        };
-        new Thread(task).start();
+            scanner.close();
+
+        });
+        dataThread.start();
 
 
 
@@ -221,13 +253,13 @@ public class AccelerometerReader extends Application {
     @FXML
     void handle_btnStop(ActionEvent event) {
         System.out.println("Stop button clicked");
-        isRunning = false;
+        stopFlag = true;
 //        try {
 //            serialThread.join();
 //        } catch (InterruptedException ex) {
 //            ex.printStackTrace();
 //        }
-        serialPort.closePort();
+        arduinoPort.closePort();
         System.out.print(xSeries);
     }
 
