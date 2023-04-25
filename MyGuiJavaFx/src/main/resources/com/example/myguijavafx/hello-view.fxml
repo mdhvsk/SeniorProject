@@ -12,6 +12,5 @@
 
     <Label fx:id="welcomeText" />
    <Button mnemonicParsing="false" text="Start" />
-    <Button onAction="#onHelloButtonClick" text="Stop" />
    <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="47.0" text="Pause" />
 </VBox>
