@@ -1,39 +1,27 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-public class AccelerometerReader extends Application {
+public class AccelerometerController {
 
     private static final int BAUD_RATE = 9600;
     private SerialPort arduinoPort;
@@ -68,51 +56,6 @@ public class AccelerometerReader extends Application {
 //        // Add the series to the chart
 //        accChart.getData().addAll(xSeries, ySeries, zSeries);
 //    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(new URL("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/GUI.fxml"));
-        AnchorPane pane = loader.load();
-
-        Scene scene = new Scene(pane);
-        stage.setScene(scene);
-        stage.show();
-        }
-//        final NumberAxis xAxis = new NumberAxis();
-//        final NumberAxis yAxis = new NumberAxis();
-//        xAxis.setLabel("Time (s)");
-//        yAxis.setLabel("Acceleration (m/s^2)");
-//        final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-//        lineChart.setTitle("Accelerometer Data");
-//
-//        // create series for x, y, and z axes
-//        xSeries.setName("X-axis");
-//        lineChart.getData().add(xSeries);
-//
-//        ySeries.setName("Y-axis");
-//        lineChart.getData().add(ySeries);
-//
-//        zSeries.setName("Z-axis");
-//        lineChart.getData().add(zSeries);
-//
-//        StackPane root = new StackPane();
-//        root.getChildren().add(lineChart);
-//
-//        Scene scene = new Scene(root, 800, 600);
-//        stage.setScene(scene);
-//        stage.show();
-//
-//
-//    }
-
-    @Override
-    public void stop() {
-        scheduledExecutorService.shutdown();
-    }
-
-
 
     @FXML
     void handle_Exit(ActionEvent event) {
@@ -226,39 +169,12 @@ public class AccelerometerReader extends Application {
         });
         dataThread.start();
 
-
-
-        // Start a separate thread to read the accelerometer data
-//        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-//        scheduledExecutorService.scheduleAtFixedRate(() -> {
-//            try {
-//                Process process = Runtime.getRuntime().exec("python read_accelerometer.py");
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//                String line = reader.readLine();
-//                if (line != null) {
-//                    String[] values = line.split(",");
-//                    Platform.runLater(() -> {
-//                        xSeries.getData().add(new XYChart.Data<>(Double.parseDouble(values[0]), Double.parseDouble(values[1])));
-//                        ySeries.getData().add(new XYChart.Data<>(Double.parseDouble(values[0]), Double.parseDouble(values[2])));
-//                        zSeries.getData().add(new XYChart.Data<>(Double.parseDouble(values[0]), Double.parseDouble(values[3])));
-//                    });
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }, 0, 100, TimeUnit.MILLISECONDS);
-
     }
 
     @FXML
     void handle_btnStop(ActionEvent event) {
         System.out.println("Stop button clicked");
         stopFlag = true;
-//        try {
-//            serialThread.join();
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        }
         arduinoPort.closePort();
         System.out.print(xSeries);
     }
@@ -305,7 +221,4 @@ public class AccelerometerReader extends Application {
         return null;
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
