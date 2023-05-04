@@ -24,7 +24,9 @@ import javafx.stage.Stage;
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +44,8 @@ public class AccelerometerReader extends Application {
     private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
+    static OutputStream outputStream;
+
     @FXML
     private MenuItem Exit;
 
@@ -118,7 +122,8 @@ public class AccelerometerReader extends Application {
 
     }
     @FXML
-    void handle_btnStart(ActionEvent event) {
+    void handle_btnStart(ActionEvent event) throws IOException
+    {
         System.out.println("Start button clicked");
         final String serialPortName = findArduinoPort();
         SerialPort [] AvailablePorts = SerialPort.getCommPorts();
@@ -129,6 +134,7 @@ public class AccelerometerReader extends Application {
 
         try {
             serialPort = SerialPort.getCommPort("COM6");
+
             int BaudRate = 9600;
             int DataBits = 8;
             int StopBits = SerialPort.ONE_STOP_BIT;
@@ -150,7 +156,8 @@ public class AccelerometerReader extends Application {
         }
 
         System.out.print(serialPort);
-
+        OutputStream outputStream1 = serialPort.getOutputStream();
+        handle_LEDStart(outputStream1);
 
         Task<Void> task = new Task<Void>() {
             @Override
@@ -159,6 +166,8 @@ public class AccelerometerReader extends Application {
                 while (!isCancelled()) {
                     System.out.println("in while l");
                     // Read a line of data from the serial port
+
+
                     Thread.sleep(100);
                     byte[] buffer = new byte[serialPort.bytesAvailable()];
                     System.out.println(buffer);
@@ -192,6 +201,15 @@ public class AccelerometerReader extends Application {
                 return null;
             }
         };
+
+//        Task<Void> motorControl = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                OutputStream outputStream1 = serialPort.getOutputStream();
+//                handle_LEDStart(outputStream1);
+//                return null;
+//            }
+//        };
         new Thread(task).start();
 
 
@@ -238,6 +256,19 @@ public class AccelerometerReader extends Application {
 
     @FXML
     void handle_menuPreset1(ActionEvent event) {
+
+    }
+
+    @FXML
+    void handle_LEDStart(OutputStream outputStream1) throws IOException
+    {
+//        OutputStream outputStream1 = comPort.getOutputStream();
+        outputStream1.write('s');
+        outputStream1.flush();
+    }
+
+    @FXML
+    void handle_LEDStop(ActionEvent event){
 
     }
 
