@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,7 @@ public class AccelerometerController {
     private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
+    static OutputStream outputStream;
     @FXML
     private MenuItem Exit;
 
@@ -62,7 +65,8 @@ public class AccelerometerController {
 
     }
     @FXML
-    void handle_btnStart(ActionEvent event) {
+    void handle_btnStart(ActionEvent event) throws IOException
+    {
 //        System.out.println("Start button clicked");
 //        final String serialPortName = findArduinoPort();
 //        SerialPort [] AvailablePorts = SerialPort.getCommPorts();
@@ -146,6 +150,10 @@ public class AccelerometerController {
         arduinoPort.setBaudRate(9600);
         arduinoPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
         arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+
+        OutputStream outputStream1 = arduinoPort.getOutputStream();
+        handle_LEDStart(outputStream1);
+
         Thread dataThread = new Thread(() -> {
             Scanner scanner = new Scanner(arduinoPort.getInputStream());
             while (scanner.hasNextLine() && !stopFlag) {
@@ -187,6 +195,13 @@ public class AccelerometerController {
     @FXML
     void handle_menuPreset1(ActionEvent event) {
 
+    }
+    @FXML
+    void handle_LEDStart(OutputStream outputStream1) throws IOException
+    {
+//        OutputStream outputStream1 = comPort.getOutputStream();
+        outputStream1.write('s');
+        outputStream1.flush();
     }
 
     private String findArduinoPort() {
