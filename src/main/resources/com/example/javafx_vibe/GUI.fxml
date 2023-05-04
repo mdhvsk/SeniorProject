@@ -76,6 +76,7 @@
                <children>
                   <Button fx:id="btnStart" layoutX="54.0" layoutY="225.0" mnemonicParsing="false" onAction="#handle_btnStart" style="-fx-background-color: #0e9409;" text="Start" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="54.0" />
                   <Button fx:id="btnStop" layoutX="54.0" layoutY="304.0" mnemonicParsing="false" onAction="#handle_btnStop" style="-fx-background-color: #c41010;" text="Stop" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="54.0" />
+                  <Button layoutX="49.0" layoutY="390.0" mnemonicParsing="false" onAction="#handle_LEDStart" text="Button" />
                </children>
             </AnchorPane>
         </items>

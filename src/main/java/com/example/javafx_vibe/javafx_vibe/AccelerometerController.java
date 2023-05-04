@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static com.example.javafx_vibe.javafx_vibe.Main.comPort;
+
 public class AccelerometerController {
 
     private static final int BAUD_RATE = 9600;
@@ -145,14 +147,15 @@ public class AccelerometerController {
         for (SerialPort port : portList) {
             System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
         }
-        arduinoPort = SerialPort.getCommPort("COM6"); // Replace COM3 with your Arduino's port name
+        arduinoPort = SerialPort.getCommPort("COM3"); // Replace COM3 with your Arduino's port name
         arduinoPort.openPort();
         arduinoPort.setBaudRate(9600);
         arduinoPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
         arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
 
-        OutputStream outputStream1 = arduinoPort.getOutputStream();
-        handle_LEDStart(outputStream1);
+        System.out.println(arduinoPort.getCommPort("COM3"));
+//        OutputStream outputStream1 = arduinoPort.getOutputStream();
+//        handle_LEDStart(outputStream1);
 
         Thread dataThread = new Thread(() -> {
             Scanner scanner = new Scanner(arduinoPort.getInputStream());
@@ -197,9 +200,10 @@ public class AccelerometerController {
 
     }
     @FXML
-    void handle_LEDStart(OutputStream outputStream1) throws IOException
+    void handle_LEDStart(ActionEvent event) throws IOException
     {
-//        OutputStream outputStream1 = comPort.getOutputStream();
+
+        OutputStream outputStream1 = comPort.getOutputStream();
         outputStream1.write('s');
         outputStream1.flush();
     }
