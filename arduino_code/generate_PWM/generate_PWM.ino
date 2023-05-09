@@ -51,6 +51,7 @@ void setup() {
 void loop() {
   // check if the arduino is receiving serial data  
   Serial.println(incomingByte);
+  int dataIn;
   if (Serial.available() > 0) {
     // Serial.readBytes(incomingByte, 10);  // make a new variable for serial data
     // incomingByte = Serial.readString();
@@ -67,11 +68,26 @@ void loop() {
         flagPWM = false;
     }   
 
+    dataIn = Serial.parseInt();
+
+
   } 
 
 
+  // if (flagPWM) {
+  //   generatePWM(intervalOn, intervalOff, dutyCycle);
+  //   digitalWrite(11,HIGH);
+  //   digitalWrite(12,LOW);
+  // }
+  // else if (flagPWM == false) {
+  //   generatePWM(0, 0, 0);
+  //   digitalWrite(11,LOW);
+  //   digitalWrite(12,HIGH);
+  // }
+
+  dataIn = dataIn * 60 * 1000;
   if (flagPWM) {
-    generatePWM(intervalOn, intervalOff, dutyCycle);
+    generatePWM(dataIn, intervalOff, dutyCycle);
     digitalWrite(11,HIGH);
     digitalWrite(12,LOW);
   }

@@ -136,16 +136,11 @@ public class AccelerometerController {
     void handle_schedule(ActionEvent event) throws IOException
     {
         OutputStream outputStream2 = comPort.getOutputStream();
-
-        if(((MenuItem)event.getSource()).getText() == "3 min, 150"){
-            String time = "3";
-            String intensity = "150";
+        if(((MenuItem)event.getSource()).getText() == "3 min 50"){
+            String time = "3 x";
             outputStream2.write(time.getBytes());
-            outputStream2.write(intensity.getBytes());
+            outputStream2.flush();
         }
-
-
-
     }
 
     private String findArduinoPort() {
