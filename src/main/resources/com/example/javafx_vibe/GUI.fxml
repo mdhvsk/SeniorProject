@@ -43,6 +43,7 @@
                     <items>
                       <MenuItem fx:id="menuPreset1" mnemonicParsing="false" onAction="#handle_menuPreset1" text="Preset1" />
                       <MenuItem fx:id="menuCustom" mnemonicParsing="false" onAction="#handle_menuCustom" text="Custom" />
+                        <MenuItem mnemonicParsing="false" onAction="#handle_schedule" text="3 min, 150" />
                     </items>
                   </MenuButton>
                </children>

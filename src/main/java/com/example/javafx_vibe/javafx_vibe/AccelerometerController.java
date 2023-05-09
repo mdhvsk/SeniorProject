@@ -69,80 +69,6 @@ public class AccelerometerController {
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException
     {
-//        System.out.println("Start button clicked");
-//        final String serialPortName = findArduinoPort();
-//        SerialPort [] AvailablePorts = SerialPort.getCommPorts();
-//
-//        // use the for loop to print the available serial ports
-//        for(SerialPort S : AvailablePorts)
-//            System.out.println("\n  " + S.toString());
-//
-//        try {
-//            serialPort = SerialPort.getCommPort("COM6");
-//            int BaudRate = 9600;
-//            int DataBits = 8;
-//            int StopBits = SerialPort.ONE_STOP_BIT;
-//            int Parity   = SerialPort.NO_PARITY;
-//
-////Sets all serial port parameters at one time
-//            serialPort.setComPortParameters(BaudRate,
-//                    DataBits,
-//                    StopBits,
-//                    Parity);
-//
-////Set Read Time outs
-//            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING,
-//                    1000,
-//                    0);
-//            serialPort.openPort();
-//        } catch (Exception e){
-//            System.out.print("Arduino port not found, check connection");
-//        }
-//
-//        System.out.print(serialPort);
-//
-//
-//        Task<Void> task = new Task<Void>() {
-//            @Override
-//            protected Void call() throws Exception {
-//                System.out.println("in call");
-//                while (!isCancelled()) {
-//                    System.out.println("in while l");
-//                    // Read a line of data from the serial port
-//                    byte[] buffer = new byte[serialPort.bytesAvailable()];
-//                    int numRead = serialPort.readBytes(buffer, buffer.length);
-//                    System.out.println(buffer);
-//                    String data = new String(buffer, 0, numRead);
-//
-//
-//                    if (data.isEmpty()) {
-//                        continue;
-//                    }
-//                    System.out.println("hi");
-//                    System.out.println(data);
-//                    // Parse the data and extract the accelerometer values
-//                    String[] values = data.split(",");
-//                    if (values.length != 3) {
-//                        continue;
-//                    }
-//                    double x = Double.parseDouble(values[0]);
-//                    System.out.print(x);
-//                    double y = Double.parseDouble(values[1]);
-//                    double z = Double.parseDouble(values[2]);
-//
-//                    // Add the new accelerometer values to the series and update the chart
-//                    Platform.runLater(() -> {
-//                            System.out.println("In run");
-//                            long now = System.currentTimeMillis();
-//                            xSeries.getData().add(new XYChart.Data<Number, Number>(now, x));
-//                            ySeries.getData().add(new XYChart.Data<Number, Number>(now, y));
-//                            zSeries.getData().add(new XYChart.Data<Number, Number>(now, z));
-//                    });
-//                }
-//                return null;
-//            }
-//        };
-//        new Thread(task).start();
         SerialPort[] portList = SerialPort.getCommPorts();
         for (SerialPort port : portList) {
             System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
@@ -154,8 +80,6 @@ public class AccelerometerController {
         arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
 
         System.out.println(arduinoPort.getCommPort("COM3"));
-//        OutputStream outputStream1 = arduinoPort.getOutputStream();
-//        handle_LEDStart(outputStream1);
 
         Thread dataThread = new Thread(() -> {
             Scanner scanner = new Scanner(arduinoPort.getInputStream());
@@ -206,6 +130,22 @@ public class AccelerometerController {
         OutputStream outputStream1 = comPort.getOutputStream();
         outputStream1.write('s');
         outputStream1.flush();
+    }
+
+    @FXML
+    void handle_schedule(ActionEvent event) throws IOException
+    {
+        OutputStream outputStream2 = comPort.getOutputStream();
+
+        if(((MenuItem)event.getSource()).getText() == "3 min, 150"){
+            String time = "3";
+            String intensity = "150";
+            outputStream2.write(time.getBytes());
+            outputStream2.write(intensity.getBytes());
+        }
+
+
+
     }
 
     private String findArduinoPort() {

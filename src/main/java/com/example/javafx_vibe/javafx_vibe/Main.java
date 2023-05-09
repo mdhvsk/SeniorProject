@@ -30,32 +30,5 @@ public class Main extends Application {
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
         comPort.openPort();
     }
-//        final NumberAxis xAxis = new NumberAxis();
-//        final NumberAxis yAxis = new NumberAxis();
-//        xAxis.setLabel("Time (s)");
-//        yAxis.setLabel("Acceleration (m/s^2)");
-//        final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-//        lineChart.setTitle("Accelerometer Data");
-//
-//        // create series for x, y, and z axes
-//        xSeries.setName("X-axis");
-//        lineChart.getData().add(xSeries);
-//
-//        ySeries.setName("Y-axis");
-//        lineChart.getData().add(ySeries);
-//
-//        zSeries.setName("Z-axis");
-//        lineChart.getData().add(zSeries);
-//
-//        StackPane root = new StackPane();
-//        root.getChildren().add(lineChart);
-//
-//        Scene scene = new Scene(root, 800, 600);
-//        stage.setScene(scene);
-//        stage.show();
-//
-//
-//    }
-
     }
 
