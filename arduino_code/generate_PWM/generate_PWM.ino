@@ -69,7 +69,7 @@ void loop() {
     }   
 
     dataIn = Serial.parseInt();
-
+    dataIn = dataIn * 60 * 1000;
 
   } 
 
@@ -85,8 +85,7 @@ void loop() {
   //   digitalWrite(12,HIGH);
   // }
 
-  dataIn = dataIn * 60 * 1000;
-  if (flagPWM) {
+  if (flagPWM && dataIn) {
     generatePWM(dataIn, intervalOff, dutyCycle);
     digitalWrite(11,HIGH);
     digitalWrite(12,LOW);
