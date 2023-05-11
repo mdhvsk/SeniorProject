@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 
 
-public class AccelerometerController {
+public class MainController {
     private boolean stopFlag = false;
     private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
