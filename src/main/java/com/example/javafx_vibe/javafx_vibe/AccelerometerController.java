@@ -24,14 +24,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static com.example.javafx_vibe.javafx_vibe.Main.comPort;
+import com.example.javafx_vibe.javafx_vibe.Main;
+
+
 
 public class AccelerometerController {
-
-    private static final int BAUD_RATE = 9600;
-    private SerialPort arduinoPort;
-    private Thread serialThread;
-    private boolean stopFlag = false;
+    private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
     private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
@@ -70,10 +68,13 @@ public class AccelerometerController {
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException
     {
-        SerialPort[] portList = SerialPort.getCommPorts();
-        for (SerialPort port : portList) {
-            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
-        }
+        SerialPort comPort = ArduinoUtils.findArduinoPort();
+        setComPort(comPort);
+
+//        SerialPort[] portList = SerialPort.getCommPorts();
+//        for (SerialPort port : portList) {
+//            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
+//        }
 //        arduinoPort = SerialPort.getCommPort("COM3"); // Replace COM3 with your Arduino's port name
 //        arduinoPort.openPort();
 //        arduinoPort.setBaudRate(9600);
@@ -81,6 +82,7 @@ public class AccelerometerController {
 //        arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
 
 //        System.out.println(arduinoPort.getCommPort("COM3"));
+
         Thread dataThread = new Thread(() -> {
             try {
                 InputStream inputStream = comPort.getInputStream();
@@ -162,37 +164,11 @@ public class AccelerometerController {
             outputStream2.flush();
         }
     }
-
-    private String findArduinoPort() {
-        List<String> portNames = Arrays.asList(
-                "/dev/tty.usbmodem", "/dev/tty.usbserial", // Mac OS X
-                "/dev/usbdev", "/dev/ttyUSB", "/dev/ttyACM", "/dev/serial", // Linux
-                "COM3", "COM4", "COM5", "COM6" // Windows
-        );
-
-        for (String portName : portNames) {
-            SerialPort port = SerialPort.getCommPort(portName);
-            if (port.openPort()) {
-                // Wait for the Arduino to reboot
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    // Ignore
-                }
-
-                // Check if the Arduino is sending data
-                byte[] buffer = new byte[port.bytesAvailable()];
-                int numRead = port.readBytes(buffer, buffer.length);
-                if (numRead > 0) {
-                    port.closePort();
-                    return portName;
-                } else {
-                    port.closePort();
-                }
-            }
-        }
-
-        return null;
+    void setComPort(SerialPort comPort){
+        this.comPort = comPort;
     }
-
 }
+
+
+
+
