@@ -1,40 +1,29 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.io.*;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.example.javafx_vibe.javafx_vibe.Main;
 
 
 
 public class AccelerometerController {
+    private boolean stopFlag = false;
     private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
     private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
-    static OutputStream outputStream;
     @FXML
     private MenuItem Exit;
 
@@ -71,25 +60,13 @@ public class AccelerometerController {
         SerialPort comPort = ArduinoUtils.findArduinoPort();
         setComPort(comPort);
 
-//        SerialPort[] portList = SerialPort.getCommPorts();
-//        for (SerialPort port : portList) {
-//            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
-//        }
-//        arduinoPort = SerialPort.getCommPort("COM3"); // Replace COM3 with your Arduino's port name
-//        arduinoPort.openPort();
-//        arduinoPort.setBaudRate(9600);
-//        arduinoPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
-//        arduinoPort.setComPortParameters(9600, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-
-//        System.out.println(arduinoPort.getCommPort("COM3"));
-
         Thread dataThread = new Thread(() -> {
             try {
                 InputStream inputStream = comPort.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 int character;
-                while ((character = inputStreamReader.read()) != -1) {
+                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
                     // Process the line of data (e.g., split it into x, y, z values)
                     if (character == '\n') {
                         String line = bufferedReader.readLine();

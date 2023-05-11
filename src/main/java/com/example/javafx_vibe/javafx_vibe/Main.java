@@ -1,6 +1,5 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,9 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.Serial;
 import java.net.URL;
-import com.example.javafx_vibe.javafx_vibe.ArduinoUtils;
 
 public class Main extends Application {
 
