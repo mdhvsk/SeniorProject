@@ -56,10 +56,10 @@
                            <children>
                               <LineChart layoutX="70.0" layoutY="82.0" prefHeight="278.0" prefWidth="308.0">
                                 <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
+                                  <CategoryAxis label="Time" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis side="LEFT" />
+                                  <NumberAxis label="Acceleration (m/s^2)" side="LEFT" upperBound="15.0" />
                                 </yAxis>
                               </LineChart>
                            </children>
