@@ -143,7 +143,6 @@ public class MainController {
         String filePath = "accelerometer_data.csv";
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
 
-        Timer timer = new Timer();
         long startTime = System.currentTimeMillis();
 
         Thread dataThread = new Thread(() -> {
@@ -158,7 +157,7 @@ public class MainController {
                         String line = bufferedReader.readLine();
                         System.out.print(line);
                         long currentTime = System.currentTimeMillis();
-                        long elapsedTime = currentTime - startTime;
+                        long elapsedTime = (currentTime - startTime) / 1000;
                         String[] values = line.split(",");
                         // Create a new array with an additional element for the timestamp
                         String[] valuesWithTime = new String[values.length + 1];
@@ -168,7 +167,6 @@ public class MainController {
 
                         // Append the formatted timestamp to the new array
                         valuesWithTime[values.length] = String.valueOf(elapsedTime);
-                        System.out.print(valuesWithTime);
                         csvWriter.writeNext(valuesWithTime);
                     }
                 }
