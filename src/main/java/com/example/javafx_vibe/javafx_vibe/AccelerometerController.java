@@ -3,6 +3,7 @@ package com.example.javafx_vibe.javafx_vibe;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -10,14 +11,19 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 
 import java.io.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledExecutorService;
 
 
 
 
-public class AccelerometerController {
+public class AccelerometerController implements Initializable
+{
     private boolean stopFlag = false;
     private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
@@ -41,6 +47,26 @@ public class AccelerometerController {
 
     @FXML
     private ProgressBar progress;
+
+    @FXML
+    private Spinner<Integer> time;
+
+    @FXML
+    private Spinner<Integer> intensity;
+    int currentTimeValue;
+    int currentIntensityValue;
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1){
+        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
+        timeValueFactory.setValue(0);
+        time.setValueFactory(timeValueFactory);
+        time.valueProperty().addListener((observableValue, integer, t1) -> currentTimeValue = time.getValue());
+        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
+        timeValueFactory.setValue(0);
+        intensity.setValueFactory(intensityValueFactory);
+        intensity.valueProperty().addListener((observableValue, integer, t1) -> currentIntensityValue = intensity.getValue());
+
+    }
 
     @FXML
     private LineChart<Number, Number> accChart;
@@ -125,9 +151,14 @@ public class AccelerometerController {
     @FXML
     void handle_LEDStart(ActionEvent event) throws IOException
     {
-
+        String timeStr = Integer.toString(currentTimeValue);
+        String intensityStr = Integer.toString(currentIntensityValue);
+        System.out.println(timeStr);
+        System.out.println(intensityStr);
         OutputStream outputStream1 = comPort.getOutputStream();
-        outputStream1.write('s');
+        String customOutput = "\"s:" + timeStr + ":" + intensityStr + "\"";
+//        String output = "s:3:1";
+        outputStream1.write(customOutput.getBytes());
         outputStream1.flush();
     }
 
