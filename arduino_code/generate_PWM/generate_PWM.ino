@@ -7,8 +7,19 @@ unsigned long intervalOn = 5000; // Default interval for ON time in milliseconds
 unsigned long intervalOff = 1000; // Default interval for OFF time in milliseconds (2 seconds)
 int dutyCycle = 90; // Default Duty cycle in percentage (80%)
 String incomingByte;
-boolean flagPWM = false; 
+// boolean flagPWM = false; 
+boolean flagPWM; 
+String incomingString = "";
 char incomingChar;
+
+int timeVal = 0;
+int cycleTotal = 0;
+int cycleIndex = 0;
+int[] intensity = {25, 50, 75, 75, 50, 25}
+int intensityIndex = -1;
+
+boolean motorRunning = false;
+
 
 // flag to start signal
 
@@ -34,9 +45,14 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty) {
     // Update the previousMillis and intervalOff
     previousMillis = currentMillis;
     intervalOff = offTime;
+    
   }
 }
 
+void generateEaglePWM(unsigned long onTime, unsigned long offTime, int cycles){
+
+
+}
 // use this section for initializing code
 void setup() {
   // Set the PWM pin as an OUTPUT
@@ -47,55 +63,56 @@ void setup() {
 
 }
 
+String getValue(String data, char separator, int index)
+{
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
+
+
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
+    }
+    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
+
 // this section loops indefinitely
 void loop() {
-  // check if the arduino is receiving serial data  
-  Serial.println(incomingByte);
-  int dataIn;
-  if (Serial.available() > 0) {
-    // Serial.readBytes(incomingByte, 10);  // make a new variable for serial data
-    // incomingByte = Serial.readString();
-    incomingChar = Serial.read();
-    //Serial.println(flagPWM);
-    
-    if (incomingChar == 's'){
-        // Call the generatePWM function with specified parameters
-        flagPWM = true;   
-    }
-    
-    else {
-        // Turn off the PWM signaling
-        flagPWM = false;
-    }   
 
-    dataIn = Serial.parseInt();
-    dataIn = dataIn * 60 * 1000;
+  if(Serial.available() > 0 ){
+      incomingString = Serial.readString();
 
-  } 
+      String start = getValue(incomingString, ':', 0);
+      String timeStr = getValue(incomingString, ':', 1);
+      String cycleStr = getValue(incomingString, ':', 2);
+
+      timeVal = timeStr.toInt() * 60 * 1000;
+      cycleTotal = intenStr.toInt();
+
+      if(start == "s" && timeVal == 3 && cycleVal == 50){
+        flagPWM = true;
+        intervalOn = cycleVal;
+      }
+  }
 
 
-  // if (flagPWM) {
-  //   generatePWM(intervalOn, intervalOff, dutyCycle);
-  //   digitalWrite(11,HIGH);
-  //   digitalWrite(12,LOW);
-  // }
-  // else if (flagPWM == false) {
-  //   generatePWM(0, 0, 0);
-  //   digitalWrite(11,LOW);
-  //   digitalWrite(12,HIGH);
-  // }
 
-  if (flagPWM && dataIn) {
-    generatePWM(dataIn, intervalOff, dutyCycle);
+
+  if (flagPWM) {
+    generatePWM(intervalOn, intervalOff, dutyCycle);
     digitalWrite(11,HIGH);
     digitalWrite(12,LOW);
   }
   else if (flagPWM == false) {
-    generatePWM(0, 0, 0);
+    generatePWM(intervalOn, intervalOff, 0);
     digitalWrite(11,LOW);
     digitalWrite(12,HIGH);
   }
 
-  
 
 }
