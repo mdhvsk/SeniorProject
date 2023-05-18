@@ -4,6 +4,8 @@ import com.opencsv.CSVReader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -12,10 +14,14 @@ import javafx.scene.control.ProgressBar;
 import java.io.FileWriter;
 import java.io.IOException;
 import com.opencsv.CSVWriter;
+
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,6 +46,9 @@ public class MainController {
     private Button btnStop;
 
     @FXML
+    private Button btnChart;
+
+    @FXML
     private MenuItem menuCustom;
 
     @FXML
@@ -49,13 +58,11 @@ public class MainController {
     private ProgressBar progress;
 
 
-    @FXML
-    private LineChart<Number, Number> accChart;
-    @FXML
-    void initialize() {
-        // Add the series to the chart
-        accChart.getData().addAll(xSeries, ySeries, zSeries);
-    }
+//    @FXML
+//    void initialize() {
+//        // Add the series to the chart
+//        accChart.getData().addAll(xSeries, ySeries, zSeries);
+//    }
 
     @FXML
     void handle_Exit(ActionEvent event) {
@@ -229,6 +236,23 @@ public class MainController {
         } else {
             // xSeries is empty
             System.out.println("xSeries is empty");
+        }
+    }
+
+
+    @FXML
+    void handle_btnChart(ActionEvent event) {
+        try {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/chart.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(new URL("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/charts.fxml"));
+            AnchorPane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Data Visualization");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     @FXML
