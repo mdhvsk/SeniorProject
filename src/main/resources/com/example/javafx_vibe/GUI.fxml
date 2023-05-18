@@ -45,7 +45,7 @@
                     <items>
                       <MenuItem fx:id="menuPreset1" mnemonicParsing="false" onAction="#handle_menuPreset1" text="Preset1" />
                       <MenuItem fx:id="menuCustom" mnemonicParsing="false" onAction="#handle_menuCustom" text="Custom" />
-                        <MenuItem mnemonicParsing="false" onAction="#handle_schedule" text="3 min, 150" />
+                        <MenuItem mnemonicParsing="false"  text="3 min, 150" />
                     </items>
                   </MenuButton>
                   <Text fx:id="timeLabel" layoutX="45.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (s)" />
@@ -83,7 +83,7 @@
                <children>
                   <Button fx:id="btnStart" layoutX="37.0" layoutY="225.0" mnemonicParsing="false" onAction="#handle_btnStart" prefHeight="26.0" prefWidth="54.0" style="-fx-background-color: #0e9409;" text="Start" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="54.0" />
                   <Button fx:id="btnStop" layoutX="37.0" layoutY="304.0" mnemonicParsing="false" onAction="#handle_btnStop" prefHeight="26.0" prefWidth="54.0" style="-fx-background-color: #c41010;" text="Stop" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="54.0" />
-                  <Button layoutX="49.0" layoutY="390.0" mnemonicParsing="false" onAction="#handle_LEDStart" text="Button" />
+                  <Button layoutX="49.0" layoutY="390.0" mnemonicParsing="false" text="Button" />
                </children>
             </AnchorPane>
         </items>

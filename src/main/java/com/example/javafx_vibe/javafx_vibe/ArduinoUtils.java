@@ -5,11 +5,12 @@ import com.fazecast.jSerialComm.SerialPort;
 public class ArduinoUtils {
     public static SerialPort findArduinoPort() {
         SerialPort[] portList = SerialPort.getCommPorts();
+        System.out.print(portList[0].getPortDescription());
         String arduinoDescription = "Arduino";
 
         for (SerialPort port : portList) {
 
-//            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
+            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
             String portDescription = port.getPortDescription();
             if (portDescription.contains(arduinoDescription)) {
                 // Try to open the port
