@@ -54,7 +54,7 @@
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <LineChart layoutX="70.0" layoutY="82.0" prefHeight="278.0" prefWidth="308.0">
+                              <LineChart fx:id="accChart" layoutX="70.0" layoutY="82.0" prefHeight="278.0" prefWidth="308.0" title="Acceleration Chart">
                                 <xAxis>
                                   <CategoryAxis label="Time" side="BOTTOM" />
                                 </xAxis>
