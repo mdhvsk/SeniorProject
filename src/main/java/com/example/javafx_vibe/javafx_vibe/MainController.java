@@ -166,7 +166,7 @@ public class MainController {
                         String line = bufferedReader.readLine();
                         System.out.print(line);
                         long currentTime = System.currentTimeMillis();
-                        long elapsedTime = (currentTime - startTime) / 1000;
+                        double elapsedTime = (double) (currentTime - startTime) / 1000;
                         String[] values = line.split(",");
                         // Create a new array with an additional element for the timestamp
                         String[] valuesWithTime = new String[values.length + 1];
