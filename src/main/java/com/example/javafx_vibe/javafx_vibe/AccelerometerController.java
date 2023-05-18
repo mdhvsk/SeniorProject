@@ -1,16 +1,23 @@
 package com.example.javafx_vibe.javafx_vibe;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import com.fazecast.jSerialComm.SerialPort;
@@ -20,12 +27,13 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static com.example.javafx_vibe.javafx_vibe.Main.comPort;
 
-public class AccelerometerController {
+public class AccelerometerController implements Initializable {
 
     private static final int BAUD_RATE = 9600;
     private SerialPort arduinoPort;
@@ -55,12 +63,32 @@ public class AccelerometerController {
     private ProgressBar progress;
 
     @FXML
+    private Spinner<Integer> time;
+
+    @FXML
+    private Spinner<Integer> intensity;
+    int currentTimeValue;
+    int currentIntensityValue;
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1){
+        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
+        timeValueFactory.setValue(0);
+        time.setValueFactory(timeValueFactory);
+        time.valueProperty().addListener((observableValue, integer, t1) -> currentTimeValue = time.getValue());
+        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
+        timeValueFactory.setValue(0);
+        intensity.setValueFactory(intensityValueFactory);
+        intensity.valueProperty().addListener((observableValue, integer, t1) -> currentIntensityValue = intensity.getValue());
+
+    }
+
+
+
+
+
+
+    @FXML
     private LineChart<Number, Number> accChart;
-//    @FXML
-//    void initialize() {
-//        // Add the series to the chart
-//        accChart.getData().addAll(xSeries, ySeries, zSeries);
-//    }
 
     @FXML
     void handle_Exit(ActionEvent event) {
@@ -126,9 +154,14 @@ public class AccelerometerController {
     @FXML
     void handle_LEDStart(ActionEvent event) throws IOException
     {
-
+        String timeStr = Integer.toString(currentTimeValue);
+        String intensityStr = Integer.toString(currentIntensityValue);
+        System.out.println(timeStr);
+        System.out.println(intensityStr);
         OutputStream outputStream1 = comPort.getOutputStream();
-        outputStream1.write('s');
+        String customOutput = "\"s:" + timeStr + ":" + intensityStr + "\"";
+//        String output = "s:3:1";
+        outputStream1.write(customOutput.getBytes());
         outputStream1.flush();
     }
 
