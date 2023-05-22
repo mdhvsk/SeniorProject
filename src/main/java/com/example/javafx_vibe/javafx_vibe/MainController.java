@@ -1,6 +1,7 @@
 package com.example.javafx_vibe.javafx_vibe;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,11 +32,10 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class MainController {
     private boolean stopFlag = false;
+    private DataController dataController;
     private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
-    private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
+
     @FXML
     private MenuItem Exit;
 
@@ -68,74 +68,7 @@ public class MainController {
     void handle_Exit(ActionEvent event) {
 
     }
-//    @FXML
-//    void handle_btnStart(ActionEvent event) throws IOException
-//    {
-//        SerialPort comPort = ArduinoUtils.findArduinoPort();
-//        setComPort(comPort);
-//
-//        String filePath = "accelerometer_data.csv";
-//        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
-//
-//        Timer timer = new Timer();
-//        long startTime = System.currentTimeMillis();
-//
-//        Thread dataThread = new Thread(() -> {
-//            try {
-//                InputStream inputStream = comPort.getInputStream();
-//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//                int character;
-//                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
-//                    // Process the line of data (e.g., split it into x, y, z values)
-//                    if (character == '\n') {
-//                        String line = bufferedReader.readLine();
-//                        System.out.print(line);
-//                        long currentTime = System.currentTimeMillis();
-//                        long elapsedTime = currentTime-startTime;
-//                        String[] values = line.split(",");
-//                        // Create a new array with an additional element for the timestamp
-//                        String[] valuesWithTime = new String[values.length + 1];
-//
-//                        // Copy the original values to the new array
-//                        System.arraycopy(values, 0, valuesWithTime, 0, values.length);
-//
-//                        // Append the formatted timestamp to the new array
-//                        valuesWithTime[values.length] = String.valueOf(elapsedTime);
-//                        csvWriter.writeNext(valuesWithTime);
-//
-////                        double x = Double.parseDouble(values[0]);
-////                        double y = Double.parseDouble(values[1]);
-////                        double z = Double.parseDouble(values[2]);
-////                        Platform.runLater(() -> {
-////                            long now = System.currentTimeMillis();
-////                            xSeries.getData().add(new XYChart.Data<>(now, x));
-////                            ySeries.getData().add(new XYChart.Data<>(now, y));
-////                            zSeries.getData().add(new XYChart.Data<>(now, z));
-////                            if (xSeries.getData().size() > 10) {
-////                                xSeries.getData().remove(0);
-////                            }
-////                            if (ySeries.getData().size() > 10) {
-////                                ySeries.getData().remove(0);
-////                            }
-////                            if (zSeries.getData().size() > 10) {
-////                                zSeries.getData().remove(0);
-////                            }
-////
-////                        });
-//                    }
-//                }
-//                inputStream.close();
-//                inputStreamReader.close();
-//
-//
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }); dataThread.start();
-//        csvWriter.close();
-//    }
+
 //
 //    @FXML
 //    void handle_btnStop(ActionEvent event) {
@@ -195,48 +128,48 @@ public class MainController {
     }
 
     @FXML
-    void handle_btnStop(ActionEvent event) {
+    void handle_btnStop(ActionEvent event) throws CsvValidationException, IOException {
         System.out.println("\nStop button clicked");
         stopFlag = true;
         comPort.closePort();
-        try {
+//        try {
 
             // Create an object of filereader
             // class with CSV file as a parameter.
-            FileReader filereader = new FileReader("accelerometer_data.csv");
-
-            // create csvReader object passing
-            // file reader as a parameter
-            CSVReader csvReader = new CSVReader(filereader);
-            String[] nextData;
-
-            // we are going to read data line by line
-            while ((nextData = csvReader.readNext()) != null) {
-                System.out.print(nextData[0]);
-                double x = Double.parseDouble(nextData[0]);
-                double y = Double.parseDouble(nextData[1]);
-                double z = Double.parseDouble(nextData[2]);
-                double time = Double.parseDouble(nextData[3]);
-
-                Platform.runLater(() -> {
-                    xSeries.getData().add(new XYChart.Data<>(time, x));
-                    ySeries.getData().add(new XYChart.Data<>(time, y));
-                    zSeries.getData().add(new XYChart.Data<>(time, z));
-                });
-
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (!xSeries.getData().isEmpty()) {
-            // xSeries has data points
-            System.out.println("xSeries has data points\n");
-            System.out.println(xSeries.getData());
-        } else {
-            // xSeries is empty
-            System.out.println("xSeries is empty");
-        }
+//            FileReader filereader = new FileReader("accelerometer_data.csv");
+//
+//            // create csvReader object passing
+//            // file reader as a parameter
+//            CSVReader csvReader = new CSVReader(filereader);
+//            String[] nextData;
+//
+//            // we are going to read data line by line
+//            while ((nextData = csvReader.readNext()) != null) {
+//                System.out.print(nextData[0]);
+//                double x = Double.parseDouble(nextData[0]);
+//                double y = Double.parseDouble(nextData[1]);
+//                double z = Double.parseDouble(nextData[2]);
+//                double time = Double.parseDouble(nextData[3]);
+//
+//                Platform.runLater(() -> {
+//                    xSeries.getData().add(new XYChart.Data<>(time, x));
+//                    ySeries.getData().add(new XYChart.Data<>(time, y));
+//                    zSeries.getData().add(new XYChart.Data<>(time, z));
+//                });
+//
+//            }
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        if (!xSeries.getData().isEmpty()) {
+//            // xSeries has data points
+//            System.out.println("xSeries has data points\n");
+//            System.out.println(xSeries.getData());
+//        } else {
+//            // xSeries is empty
+//            System.out.println("xSeries is empty");
+//        }
     }
 
 
@@ -247,12 +180,18 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(new URL("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/charts.fxml"));
             AnchorPane pane = loader.load();
+
+            DataController dataController = loader.getController();
+            dataController.parseData("C:\\Users\\Owner\\Code\\javafx_vibe\\accelerometer_data.csv");
+
             Stage stage = new Stage();
             stage.setScene(new Scene(pane));
             stage.setTitle("Data Visualization");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
         }
     }
     @FXML
