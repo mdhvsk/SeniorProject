@@ -62,10 +62,13 @@ public class MainController implements Initializable
     private int currentTimeValue;
     private int currentIntensityValue;
 
-    protected static SerialPort macArduinoPort = SerialPort.getCommPort("/dev/tty.usbserial-1130");
+//    Mac version
+//    protected static SerialPort macArduinoPort = SerialPort.getCommPort("/dev/tty.usbserial-1130");
+//    protected static SerialPort macArduinoPort = SerialPort.getCommPort("/dev/tty.usbmodem11301");
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1){
+        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
         SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
         timeValueFactory.setValue(0);
         time.setValueFactory(timeValueFactory);
@@ -74,9 +77,9 @@ public class MainController implements Initializable
         timeValueFactory.setValue(0);
         intensity.setValueFactory(intensityValueFactory);
         intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
-        macArduinoPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
-        macArduinoPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
-        macArduinoPort.openPort();
+        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
+        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
+        comPort.openPort();
     }
 
     @FXML
@@ -88,55 +91,55 @@ public class MainController implements Initializable
     }
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
-        SerialPort comPort = ArduinoUtils.findArduinoPort();
-        setComPort(comPort);
+//        SerialPort comPort = ArduinoUtils.findArduinoPort();
+//        setComPort(comPort);
 
 
         handleMotorStart(comPort);
-
-        String filePath = "accelerometer_data.csv";
-        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
-
-        long startTime = System.currentTimeMillis();
-
-        Thread dataThread = new Thread(() -> {
-            try {
-                InputStream inputStream = comPort.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                int character;
-                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
-                    // Process the line of data (e.g., split it into x, y, z values)
-                    if (character == '\n') {
-                        String line = bufferedReader.readLine();
-                        System.out.print(line);
-                        long currentTime = System.currentTimeMillis();
-                        long elapsedTime = (currentTime - startTime) / 1000;
-                        String[] values = line.split(",");
-                        // Create a new array with an additional element for the timestamp
-                        String[] valuesWithTime = new String[values.length + 1];
-
-                        // Copy the original values to the new array
-                        System.arraycopy(values, 0, valuesWithTime, 0, values.length);
-
-                        // Append the formatted timestamp to the new array
-                        valuesWithTime[values.length] = String.valueOf(elapsedTime);
-                        csvWriter.writeNext(valuesWithTime);
-                    }
-                }
-                inputStream.close();
-                inputStreamReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    csvWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        dataThread.start();
+//
+//        String filePath = "accelerometer_data.csv";
+//        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
+//
+//        long startTime = System.currentTimeMillis();
+//
+//        Thread dataThread = new Thread(() -> {
+//            try {
+//                InputStream inputStream = comPort.getInputStream();
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//                int character;
+//                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
+//                    // Process the line of data (e.g., split it into x, y, z values)
+//                    if (character == '\n') {
+//                        String line = bufferedReader.readLine();
+//                        System.out.print(line);
+//                        long currentTime = System.currentTimeMillis();
+//                        long elapsedTime = (currentTime - startTime) / 1000;
+//                        String[] values = line.split(",");
+//                        // Create a new array with an additional element for the timestamp
+//                        String[] valuesWithTime = new String[values.length + 1];
+//
+//                        // Copy the original values to the new array
+//                        System.arraycopy(values, 0, valuesWithTime, 0, values.length);
+//
+//                        // Append the formatted timestamp to the new array
+//                        valuesWithTime[values.length] = String.valueOf(elapsedTime);
+//                        csvWriter.writeNext(valuesWithTime);
+//                    }
+//                }
+//                inputStream.close();
+//                inputStreamReader.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    csvWriter.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        dataThread.start();
     }
 
     @FXML

@@ -1,89 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="584.0" prefWidth="762.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_vibe.javafx_vibe.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="702.0" prefWidth="447.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_vibe.javafx_vibe.MainController">
    <children>
-      <MenuBar>
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem fx:id="Exit" mnemonicParsing="false" onAction="#handle_Exit" text="Exit" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-      <SplitPane dividerPositions="0.2, 0.8" layoutX="263.0" layoutY="218.0" prefHeight="584.0" prefWidth="762.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+      <SplitPane layoutX="263.0" layoutY="218.0" prefHeight="584.0" prefWidth="762.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
         <items>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="557.0" prefWidth="562.0">
                <children>
-                  <Text layoutX="16.0" layoutY="408.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select Your Schedule" />
-                  <MenuButton layoutX="28.0" layoutY="423.0" mnemonicParsing="false" text="Schedules">
-                    <items>
-                      <MenuItem fx:id="menuPreset1" mnemonicParsing="false" onAction="#handle_menuPreset1" text="Preset1" />
-                      <MenuItem fx:id="menuCustom" mnemonicParsing="false" onAction="#handle_menuCustom" text="Custom" />
-                        <MenuItem mnemonicParsing="false"  text="3 min, 150" />
-                    </items>
-                  </MenuButton>
-                  <Text fx:id="timeLabel" layoutX="45.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (s)" />
-                  <Spinner fx:id="time" editable="true" layoutX="20.0" layoutY="172.0" prefHeight="26.0" prefWidth="109.0" />
-                  <Spinner fx:id="intensity" editable="true" layoutX="28.0" layoutY="298.0" prefHeight="26.0" prefWidth="93.0" />
-                  <Label layoutX="40.0" layoutY="270.0" prefHeight="17.0" prefWidth="70.0" text="Intensity (%)" />
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <SplitPane dividerPositions="0.8" layoutX="111.0" layoutY="236.0" orientation="VERTICAL" prefHeight="557.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <items>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                           <children>
-                              <LineChart fx:id="accChart" layoutX="70.0" layoutY="82.0" prefHeight="278.0" prefWidth="308.0" title="Acceleration Chart">
-                                <xAxis>
-                                  <CategoryAxis label="Time" side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis label="Acceleration (m/s^2)" side="LEFT" upperBound="15.0" />
-                                </yAxis>
-                              </LineChart>
-                           </children>
-                        </AnchorPane>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                           <children>
-                              <ProgressBar fx:id="progress" layoutX="124.0" layoutY="45.0" prefWidth="200.0" progress="0.0" AnchorPane.leftAnchor="124.0" AnchorPane.rightAnchor="124.0" />
-                           </children>
-                        </AnchorPane>
-                    </items>
-                  </SplitPane>
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <Button fx:id="btnStart" layoutX="37.0" layoutY="225.0" mnemonicParsing="false" onAction="#handle_btnStart" prefHeight="26.0" prefWidth="54.0" style="-fx-background-color: #0e9409;" text="Start" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="54.0" />
-                  <Button fx:id="btnStop" layoutX="37.0" layoutY="304.0" mnemonicParsing="false" onAction="#handle_btnStop" prefHeight="26.0" prefWidth="54.0" style="-fx-background-color: #c41010;" text="Stop" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="54.0" />
-                  <Button layoutX="49.0" layoutY="390.0" mnemonicParsing="false" text="Button" />
+                  <Button fx:id="btnStart" layoutX="148.0" layoutY="437.0" mnemonicParsing="false" onAction="#handle_btnStart" prefHeight="58.0" prefWidth="183.0" style="-fx-background-color: #0e9409; -fx-border-radius: 250;" text="Start" AnchorPane.leftAnchor="148.0" AnchorPane.rightAnchor="114.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Button>
+                  <Button fx:id="btnStop" layoutX="114.0" layoutY="522.0" mnemonicParsing="false" onAction="#handle_btnStop" prefHeight="74.0" prefWidth="250.0" style="-fx-background-color: #c41010;" text="Stop" AnchorPane.leftAnchor="114.0" AnchorPane.rightAnchor="81.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Button>
+                  <Text fx:id="timeLabel" layoutX="91.0" layoutY="204.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (s)" wrappingWidth="44.42724609375" />
+                  <Spinner fx:id="time" editable="true" layoutX="41.0" layoutY="242.0" prefHeight="13.0" prefWidth="144.0" />
+                  <Spinner fx:id="intensity" editable="true" layoutX="257.0" layoutY="241.0" prefHeight="13.0" prefWidth="144.0" />
+                  <Label layoutX="264.0" layoutY="184.0" prefHeight="17.0" prefWidth="46.0" text="Cycles" />
+                  <ImageView fitHeight="46.0" fitWidth="43.0" layoutX="343.0" layoutY="168.0">
+                     <image>
+                        <Image url="@../../../../../../../../Downloads/cycle.png" />
+                     </image>
+                  </ImageView>
                </children>
             </AnchorPane>
         </items>
