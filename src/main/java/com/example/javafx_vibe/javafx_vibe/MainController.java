@@ -116,48 +116,10 @@ public class MainController {
     }
 
     @FXML
-    void handle_btnStop(ActionEvent event) throws CsvValidationException, IOException {
+    void handle_btnStop(ActionEvent event) throws IOException {
         System.out.println("\nStop button clicked");
         stopFlag = true;
         comPort.closePort();
-//        try {
-
-            // Create an object of filereader
-            // class with CSV file as a parameter.
-//            FileReader filereader = new FileReader("accelerometer_data.csv");
-//
-//            // create csvReader object passing
-//            // file reader as a parameter
-//            CSVReader csvReader = new CSVReader(filereader);
-//            String[] nextData;
-//
-//            // we are going to read data line by line
-//            while ((nextData = csvReader.readNext()) != null) {
-//                System.out.print(nextData[0]);
-//                double x = Double.parseDouble(nextData[0]);
-//                double y = Double.parseDouble(nextData[1]);
-//                double z = Double.parseDouble(nextData[2]);
-//                double time = Double.parseDouble(nextData[3]);
-//
-//                Platform.runLater(() -> {
-//                    xSeries.getData().add(new XYChart.Data<>(time, x));
-//                    ySeries.getData().add(new XYChart.Data<>(time, y));
-//                    zSeries.getData().add(new XYChart.Data<>(time, z));
-//                });
-//
-//            }
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        if (!xSeries.getData().isEmpty()) {
-//            // xSeries has data points
-//            System.out.println("xSeries has data points\n");
-//            System.out.println(xSeries.getData());
-//        } else {
-//            // xSeries is empty
-//            System.out.println("xSeries is empty");
-//        }
     }
 
 
