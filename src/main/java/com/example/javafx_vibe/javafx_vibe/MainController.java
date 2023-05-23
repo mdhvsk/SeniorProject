@@ -1,9 +1,12 @@
 package com.example.javafx_vibe.javafx_vibe;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -15,11 +18,14 @@ import java.io.IOException;
 import com.opencsv.CSVWriter;
 
 import java.net.URL;
+
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
@@ -32,11 +38,10 @@ import java.util.concurrent.ScheduledExecutorService;
 public class MainController implements Initializable
 {
     private boolean stopFlag = false;
+    private DataController dataController;
     private SerialPort comPort;
     private ScheduledExecutorService scheduledExecutorService;
-    private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
+
     @FXML
     private MenuItem Exit;
 
@@ -47,6 +52,9 @@ public class MainController implements Initializable
     private Button btnStop;
 
     @FXML
+    private Button btnChart;
+
+    @FXML
     private MenuItem menuCustom;
 
     @FXML
@@ -55,6 +63,7 @@ public class MainController implements Initializable
     @FXML
     private ProgressBar progress;
 
+=======
     @FXML
     private Spinner<Integer> time;
     @FXML
@@ -89,101 +98,72 @@ public class MainController implements Initializable
     void handle_Exit(ActionEvent event) {
 
     }
+
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
-//        SerialPort comPort = ArduinoUtils.findArduinoPort();
-//        setComPort(comPort);
+        SerialPort comPort = ArduinoUtils.findArduinoPort();
+        setComPort(comPort);
 
+        String filePath = "accelerometer_data.csv";
+        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
 
-        handleMotorStart(comPort);
-//
-//        String filePath = "accelerometer_data.csv";
-//        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
-//
-//        long startTime = System.currentTimeMillis();
-//
-//        Thread dataThread = new Thread(() -> {
-//            try {
-//                InputStream inputStream = comPort.getInputStream();
-//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//                int character;
-//                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
-//                    // Process the line of data (e.g., split it into x, y, z values)
-//                    if (character == '\n') {
-//                        String line = bufferedReader.readLine();
-//                        System.out.print(line);
-//                        long currentTime = System.currentTimeMillis();
-//                        long elapsedTime = (currentTime - startTime) / 1000;
-//                        String[] values = line.split(",");
-//                        // Create a new array with an additional element for the timestamp
-//                        String[] valuesWithTime = new String[values.length + 1];
-//
-//                        // Copy the original values to the new array
-//                        System.arraycopy(values, 0, valuesWithTime, 0, values.length);
-//
-//                        // Append the formatted timestamp to the new array
-//                        valuesWithTime[values.length] = String.valueOf(elapsedTime);
-//                        csvWriter.writeNext(valuesWithTime);
-//                    }
-//                }
-//                inputStream.close();
-//                inputStreamReader.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//                try {
-//                    csvWriter.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        dataThread.start();
+        long startTime = System.currentTimeMillis();
+
+        Thread dataThread = new Thread(() -> {
+            try {
+                InputStream inputStream = comPort.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                while (!stopFlag) {
+                    // Process the line of data (e.g., split it into x, y, z values)
+                    var line = bufferedReader.readLine();
+                    System.out.println(line);
+                    long currentTime = System.currentTimeMillis();
+                    double elapsedTime = (double) (currentTime - startTime) / 1000;
+                    try {
+                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
+                        csvWriter.writeNext(accelerationData.toCsvStrings());
+                    } catch (Exception e) {
+                        System.out.println("Failed to parse arduino data: " + e);
+                    }
+                }
+                inputStream.close();
+                inputStreamReader.close();
+                csvWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        dataThread.start();
     }
 
     @FXML
-    void handle_btnStop(ActionEvent event) {
+    void handle_btnStop(ActionEvent event) throws IOException {
         System.out.println("\nStop button clicked");
         stopFlag = true;
         comPort.closePort();
+    }
+
+
+    @FXML
+    void handle_btnChart(ActionEvent event) {
         try {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/chart.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(new URL("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/charts.fxml"));
+            AnchorPane pane = loader.load();
 
-            // Create an object of filereader
-            // class with CSV file as a parameter.
-            FileReader filereader = new FileReader("accelerometer_data.csv");
+            DataController dataController = loader.getController();
+            dataController.parseData("C:\\Users\\Owner\\Code\\javafx_vibe\\accelerometer_data.csv");
 
-            // create csvReader object passing
-            // file reader as a parameter
-            CSVReader csvReader = new CSVReader(filereader);
-            String[] nextData;
-
-            // we are going to read data line by line
-            while ((nextData = csvReader.readNext()) != null) {
-                System.out.print(nextData[0]);
-                double x = Double.parseDouble(nextData[0]);
-                double y = Double.parseDouble(nextData[1]);
-                double z = Double.parseDouble(nextData[2]);
-                double time = Double.parseDouble(nextData[3]);
-
-                Platform.runLater(() -> {
-                    xSeries.getData().add(new XYChart.Data<>(time, x));
-                    ySeries.getData().add(new XYChart.Data<>(time, y));
-                    zSeries.getData().add(new XYChart.Data<>(time, z));
-                });
-
-            }
-        }
-        catch (Exception e) {
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Data Visualization");
+            stage.show();
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        if (!xSeries.getData().isEmpty()) {
-            // xSeries has data points
-            System.out.println("xSeries has data points\n");
-            System.out.println(xSeries.getData());
-        } else {
-            // xSeries is empty
-            System.out.println("xSeries is empty");
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
         }
     }
 

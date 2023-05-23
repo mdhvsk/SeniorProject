@@ -16,6 +16,7 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="557.0" prefWidth="562.0">
                <children>
+
                   <Button fx:id="btnStart" layoutX="148.0" layoutY="437.0" mnemonicParsing="false" onAction="#handle_btnStart" prefHeight="58.0" prefWidth="183.0" style="-fx-background-color: #0e9409; -fx-border-radius: 250;" text="Start" AnchorPane.leftAnchor="148.0" AnchorPane.rightAnchor="114.0">
                      <font>
                         <Font size="24.0" />
