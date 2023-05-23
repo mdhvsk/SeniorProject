@@ -45,14 +45,12 @@ public class DataController {
             csvReader = new CSVReader(filereader);
 
 
-            // Read data line by line and populate the arrays
+            // Read data line by line
             for (String[] line: csvReader) {
-                double x = Double.parseDouble(line[0]);
-                double y = Double.parseDouble(line[1]);
-                double z = Double.parseDouble(line[2]);
-                double time = Double.parseDouble(line[3]);
-
-                rawAccelerationData.add(new AccelerationData(x, y, z, time));
+                // Get acceleration data from line
+                AccelerationData accData = AccelerationData.fromCsv(line);
+                // add to array
+                rawAccelerationData.add(accData);
             }
         } finally {
             csvReader.close();
@@ -68,7 +66,7 @@ public class DataController {
 
         System.out.print("Length is: " + rawAccelerationData.size());
 
-        timeChart.getData().addAll(xSeriesTime, ySeriesTime, zSeriesTime, magSeriesTime);
+        timeChart.getData().addAll(magSeriesTime);
 
     }
 
