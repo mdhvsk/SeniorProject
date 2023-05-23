@@ -80,9 +80,9 @@ void loop () {
   if(Serial.available() > 0 ){
         incomingString = Serial.readString();
 
-        String start = getValue(incomingString, ':', 0); 
-        String timeStr = getValue(incomingString, ':', 1);
-        String cycleStr = getValue(incomingString, ':', 2);
+        start = getValue(incomingString, ':', 0);
+        timeStr = getValue(incomingString, ':', 1);
+        cycleStr = getValue(incomingString, ':', 2);
 
         timeVal = timeStr.toInt() * 1000;
         cycleTotal = cycleStr.toInt();
