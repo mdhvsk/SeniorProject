@@ -18,19 +18,19 @@ import java.lang.Math;
 public class DataController {
 
     @FXML
-    private LineChart<Number, Number> fourierChart;
+    private LineChart<Double, Double> fourierChart;
 
     @FXML
-    private LineChart<Number, Number> timeChart;
+    private LineChart<Double, Double> timeChart;
 
-    private XYChart.Series<Number, Number> xSeriesTime = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> ySeriesTime = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> zSeriesTime = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> magSeriesTime = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> xSeriesFourier = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> ySeriesFourier = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> zSeriesFourier = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> magSeriesFourier = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> xSeriesTime = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> ySeriesTime = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> zSeriesTime = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> magSeriesTime = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> xSeriesFourier = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> ySeriesFourier = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> zSeriesFourier = new XYChart.Series<>();
+    private XYChart.Series<Double, Double> magSeriesFourier = new XYChart.Series<>();
 
     public void initialize() {
 
@@ -43,7 +43,7 @@ public class DataController {
         CSVReader csvReader = null;
         try {
             csvReader = new CSVReader(filereader);
-            csvReader.close();
+
 
             // Read data line by line and populate the arrays
             for (String[] line: csvReader) {
@@ -51,10 +51,9 @@ public class DataController {
                 double y = Double.parseDouble(line[1]);
                 double z = Double.parseDouble(line[2]);
                 double time = Double.parseDouble(line[3]);
+
                 rawAccelerationData.add(new AccelerationData(x, y, z, time));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             csvReader.close();
         }
@@ -66,6 +65,8 @@ public class DataController {
             double mag = Math.sqrt(accData.x() * accData.x() + accData.y() * accData.y() + accData.z() * accData.z());
             magSeriesTime.getData().add(new XYChart.Data<>(accData.time(), mag));
         }
+
+        System.out.print("Length is: " + rawAccelerationData.size());
 
         timeChart.getData().addAll(xSeriesTime, ySeriesTime, zSeriesTime, magSeriesTime);
 

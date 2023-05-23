@@ -92,36 +92,24 @@ public class MainController {
                 InputStream inputStream = comPort.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                int character;
-                while ((character = inputStreamReader.read()) != -1 && !stopFlag) {
+                while (!stopFlag) {
                     // Process the line of data (e.g., split it into x, y, z values)
-                    if (character == '\n') {
-                        String line = bufferedReader.readLine();
-                        System.out.print(line);
-                        long currentTime = System.currentTimeMillis();
-                        double elapsedTime = (double) (currentTime - startTime) / 1000;
-                        String[] values = line.split(",");
-                        // Create a new array with an additional element for the timestamp
-                        String[] valuesWithTime = new String[values.length + 1];
-
-                        // Copy the original values to the new array
-                        System.arraycopy(values, 0, valuesWithTime, 0, values.length);
-
-                        // Append the formatted timestamp to the new array
-                        valuesWithTime[values.length] = String.valueOf(elapsedTime);
-                        csvWriter.writeNext(valuesWithTime);
+                    var line = bufferedReader.readLine();
+                    System.out.println(line);
+                    long currentTime = System.currentTimeMillis();
+                    double elapsedTime = (double) (currentTime - startTime) / 1000;
+                    try {
+                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
+                        csvWriter.writeNext(accelerationData.toCsvStrings());
+                    } catch (Exception e) {
+                        System.out.println("Failed to parse arduino data: " + e);
                     }
                 }
                 inputStream.close();
                 inputStreamReader.close();
+                csvWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    csvWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         });
         dataThread.start();

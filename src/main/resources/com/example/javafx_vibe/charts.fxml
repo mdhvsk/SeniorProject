@@ -19,7 +19,7 @@
                            <children>
                               <LineChart fx:id="timeChart" animated="false" horizontalGridLinesVisible="false" layoutX="-33.0" layoutY="-31.0" prefHeight="324.0" prefWidth="417.0" title="Acceleration vs. Time" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <xAxis>
-                                  <CategoryAxis label="Time" side="BOTTOM" />
+                                  <NumberAxis label="Time" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis label="Acceleration (m/s^2)" side="LEFT" />
@@ -31,7 +31,7 @@
                            <children>
                               <LineChart fx:id="fourierChart" horizontalGridLinesVisible="false" layoutX="-14.0" layoutY="-24.0" prefHeight="324.0" prefWidth="415.0" title="Acceleration vs. Frequency" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <xAxis>
-                                  <CategoryAxis label="Frequency" side="BOTTOM" />
+                                  <NumberAxis label="Frequency" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis label="Acceleration (m/s^2)" side="LEFT" />
