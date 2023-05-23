@@ -63,6 +63,9 @@ public class MainController implements Initializable
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1){
+        SerialPort comPort = ArduinoUtils.findArduinoPort();
+        setComPort(comPort);
+
 //        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
 //        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
 //        timeValueFactory.setValue(0);
@@ -80,9 +83,6 @@ public class MainController implements Initializable
 
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
-        SerialPort comPort = ArduinoUtils.findArduinoPort();
-        setComPort(comPort);
-
         String filePath = "accelerometer_data.csv";
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
 
