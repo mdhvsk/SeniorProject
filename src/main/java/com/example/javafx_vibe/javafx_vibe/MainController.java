@@ -38,12 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class MainController implements Initializable
 {
     private boolean stopFlag = false;
-    private DataController dataController;
     private SerialPort comPort;
-    private ScheduledExecutorService scheduledExecutorService;
-
-    @FXML
-    private MenuItem Exit;
 
     @FXML
     private Button btnStart;
@@ -54,14 +49,6 @@ public class MainController implements Initializable
     @FXML
     private Button btnChart;
 
-    @FXML
-    private MenuItem menuCustom;
-
-    @FXML
-    private MenuItem menuPreset1;
-
-    @FXML
-    private ProgressBar progress;
 
     @FXML
     private Spinner<Integer> time;
@@ -90,13 +77,6 @@ public class MainController implements Initializable
 //        comPort.openPort();
     }
 
-    @FXML
-    private LineChart<Number, Number> accChart;
-
-    @FXML
-    void handle_Exit(ActionEvent event) {
-
-    }
 
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
