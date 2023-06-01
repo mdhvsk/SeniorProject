@@ -24,12 +24,34 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   unsigned long elapsedMillis = currentMillis - previousMillis; // Calculate elapsed time since last update
 
   // if (elapsedMillis <= onTime && !digitalRead(pwmPin)) {
-  if (elapsedMillis <= onTime) {
+
+  if (elapsedMillis <= 1000){
+    analogWrite(pwmPin, 0.2 * duty * 255 / 100); // Convert duty cycle percentage to PWM value
+    digitalWrite(52,HIGH);
+    digitalWrite(53,LOW);
+  }  
+  if (elapsedMillis <= 2000 && elapsedMillis > 1000) {
+    analogWrite(pwmPin, 0.4 duty * 255 / 100); // Convert duty cycle percentage to PWM value
+    digitalWrite(52,HIGH);
+    digitalWrite(53,LOW);
+  }
+  if (elapsedMillis <= 3000 && elapsedMillis > 2000){
+    analogWrite(pwmPin, 0.6 * duty * 255 / 100); // Convert duty cycle percentage to PWM value
+    digitalWrite(52,HIGH);
+    digitalWrite(53,LOW);
+  }  
+  if (elapsedMillis <= 4000 && elapsedMillis > 3000) {
+    analogWrite(pwmPin, 0.8 duty * 255 / 100); // Convert duty cycle percentage to PWM value
+    digitalWrite(52,HIGH);
+    digitalWrite(53,LOW);
+  }
+
+  if (elapsedMillis <= onTime && elapsedMillis >= 5000 ) {
 
     // Set PWM signal ON with specified duty cycle
     analogWrite(pwmPin, duty * 255 / 100); // Convert duty cycle percentage to PWM value
-    digitalWrite(53,HIGH);
-    digitalWrite(52,LOW);
+    digitalWrite(52,HIGH);
+    digitalWrite(53,LOW);
   }
 
   // if (elapsedMillis > onTime && analogRead(pwmPin)) {
@@ -37,8 +59,8 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
 
     // Set PWM signal OFF
     analogWrite(pwmPin, 0); // 0% duty cycle (fully OFF)
-    digitalWrite(53,LOW);
-    digitalWrite(52,HIGH);
+    digitalWrite(52,LOW);
+    digitalWrite(53,HIGH);
   }
 
     if (elapsedMillis >= onTime + offTime) {
@@ -105,8 +127,8 @@ void loop () {
   if(!motorRunning){
 //haven't recieved data 
     if(start.length() == 0 && timeVal == 0 && cycleTotal == 1) { 
-              digitalWrite(53,LOW);
-              digitalWrite(52,HIGH);
+              digitalWrite(52,LOW);
+              digitalWrite(53,HIGH);
       return;
     }
 
@@ -116,16 +138,16 @@ void loop () {
       timeVal = 0;
       cycleTotal=1;
       end = false;
-      digitalWrite(53,LOW);
-      digitalWrite(52,HIGH);
+      digitalWrite(52,LOW);
+      digitalWrite(53,HIGH);
     }
 // Cycles completed
     if(cycleIndex >= cycleTotal) { //Stop signal
       start = "";
       timeVal = 0;
       cycleTotal = 1;
-      digitalWrite(53,LOW);
-      digitalWrite(52,HIGH);
+      digitalWrite(52,LOW);
+      digitalWrite(53,HIGH);
 
       return;
     }
@@ -156,8 +178,8 @@ void loop () {
 
   // Any errors (hasn't been called on yet)
   else {
-    digitalWrite(53,LOW);
-    digitalWrite(52,HIGH);
+    digitalWrite(52,LOW);
+    digitalWrite(53,HIGH);
   }
 
 }

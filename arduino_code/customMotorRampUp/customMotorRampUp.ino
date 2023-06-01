@@ -10,7 +10,7 @@ int timeVal = 0;
 int cycleTotal = 1;
 int cycleIndex = 0;
 int intensity[] = {25, 50, 75, 75, 50, 25};
-int intensityDummy[] = {15, 25};
+// int intensityDummy[] = {15, 25};
 int intensityIndex = -1;
 String start;
 String timeStr;
@@ -24,13 +24,45 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   unsigned long elapsedMillis = currentMillis - previousMillis; // Calculate elapsed time since last update
 
   // if (elapsedMillis <= onTime && !digitalRead(pwmPin)) {
-  if (elapsedMillis <= onTime) {
 
+// 10 second ramp up
+  if(elapsedMillis > 0 && elapsedMillis < 10000){
+    analogWrite(pwmPin, (0.6) * duty * 255 / 100);
+    digitalWrite(53,HIGH);
+    digitalWrite(52,LOW);
+  }
+
+  // if(elapsedMillis > 0 && elapsedMillis < 60000){
+  //   analogWrite(pwmPin, (elapsedMillis/60000) * duty * 255 / 100);
+  //   digitalWrite(53,HIGH);
+  //   digitalWrite(52,LOW);
+  // }
+  
+// 10 second ramp up run
+  if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis <= 10000) {
     // Set PWM signal ON with specified duty cycle
     analogWrite(pwmPin, duty * 255 / 100); // Convert duty cycle percentage to PWM value
     digitalWrite(53,HIGH);
     digitalWrite(52,LOW);
   }
+  //   if (elapsedMillis <= onTime && elapsedMillis >= 60000 && onTime - elapsedMillis >= 60000) {
+  //   // Set PWM signal ON with specified duty cycle
+  //   analogWrite(pwmPin, duty * 255 / 100); // Convert duty cycle percentage to PWM value
+  //   digitalWrite(53,HIGH);
+  //   digitalWrite(52,LOW);
+  // }
+ 
+  //   if(onTime - elapsedMillis < 10000){
+  //   analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
+  //   digitalWrite(53,HIGH);
+  //   digitalWrite(52,LOW);
+  // }
+
+  //   if(onTime - elapsedMillis < 60000){
+  //   analogWrite(pwmPin, ((onTime-elapsedMillis)/60000) * duty * 255 / 100);
+  //   digitalWrite(53,HIGH);
+  //   digitalWrite(52,LOW);
+  // }
 
   // if (elapsedMillis > onTime && analogRead(pwmPin)) {
   if (elapsedMillis > onTime ) {
@@ -83,25 +115,25 @@ void loop () {
         incomingString = Serial.readString();
 
 
-        // if(incomingString == "t"){
-        //   end = true;
-        //   motorRunning = false;
-        // }
-        // else{
+        if(incomingString == "t"){
+          end = true;
+          motorRunning = false;
+        }
+        else{
           start = getValue(incomingString, ':', 0);
           timeStr = getValue(incomingString, ':', 1);
           cycleStr = getValue(incomingString, ':', 2);
 
           timeVal = timeStr.toInt() * 1000;
           cycleTotal = cycleStr.toInt();
-        // }
+        }
 
         // if(start.length() > 0 && timeVal > 0 && cycleTotal > 1 ){
         //       digitalWrite(11,HIGH);
         //       digitalWrite(12,LOW);
         // }
     }
-  
+
   if(!motorRunning){
 //haven't recieved data 
     if(start.length() == 0 && timeVal == 0 && cycleTotal == 1) { 
@@ -109,37 +141,39 @@ void loop () {
               digitalWrite(52,HIGH);
       return;
     }
-
 // Stop button pressed
     if(end == true){
       start = "";
       timeVal = 0;
       cycleTotal=1;
-      end = false;
+      cycleIndex = 0;
+      end=false;
+      intensityIndex = -1;
+      digitalWrite(pwmPin, LOW);
       digitalWrite(53,LOW);
       digitalWrite(52,HIGH);
+      return;
     }
 // Cycles completed
     if(cycleIndex >= cycleTotal) { //Stop signal
       start = "";
       timeVal = 0;
       cycleTotal = 1;
+      cycleIndex = 0;
+      intensityIndex = -1;
+      digitalWrite(pwmPin, LOW);
       digitalWrite(53,LOW);
       digitalWrite(52,HIGH);
-
       return;
     }
-
-
+    
     intensityIndex++; // changes intensity 
-
   // Turn on motor if input given or if new cycle starts
-    motorRunning = true; //continues generatePWM
-
-    if(intensityIndex > 1){
-      intensityIndex = 0;
-      cycleIndex++;
-    }
+     motorRunning = true; //continues generatePWM
+    // if(intensityIndex > 1){
+    //   intensityIndex = 0;
+    //   cycleIndex++;
+    // }
     if(intensityIndex > 5){
       intensityIndex = 0;
       cycleIndex++;
@@ -150,7 +184,7 @@ void loop () {
   if(motorRunning){
       // digitalWrite(11,HIGH);
       // digitalWrite(12,LOW);
-    // generatePWM(timeVal, 1000, intensityDummy[intensityIndex]);
+    generatePWM(timeVal, 5000, intensity[intensityIndex]);
     analogWrite(pwmPin, 128);
   }
 

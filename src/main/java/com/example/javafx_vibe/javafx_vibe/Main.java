@@ -34,5 +34,11 @@ public class Main extends Application {
         primaryStage.show();
 
     }
+    @Override
+    public void stop(){
+        MainController.closeComPort();
+        System.out.println("App stopped");
+    }
+
 }
 
