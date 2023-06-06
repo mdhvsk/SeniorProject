@@ -15,7 +15,7 @@ public class ArduinoUtils {
             if (portDescription.contains(arduinoDescription)) {
                 // Try to open the port
                 try{port.openPort();
-                    port.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
+                    port.setComPortParameters(115200, 8, 1, SerialPort.NO_PARITY);
                     port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 3000, 0);
                     System.out.println("Connected to Arduino on port: " + port.getSystemPortName());
                     // You can perform further operations with the opened port here

@@ -55,14 +55,8 @@ public class DataController {
         } finally {
             csvReader.close();
         }
-        // Update the series
-        for (AccelerationData accData:rawAccelerationData){
-            xSeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.x()));
-            ySeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.y()));
-            zSeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.z()));
-            double mag = Math.sqrt(accData.x() * accData.x() + accData.y() * accData.y() + accData.z() * accData.z());
-            magSeriesTime.getData().add(new XYChart.Data<>(accData.time(), mag));
-        }
+        populateSeries(rawAccelerationData);
+
 
         System.out.print("Length is: " + rawAccelerationData.size());
 
@@ -77,18 +71,19 @@ public class DataController {
 //
 //    }
 //
-//    private void populateTimeChart(series) {
-//        // Create a NumberAxis for x and y axes
-//        NumberAxis xAxis = new NumberAxis();
-//        NumberAxis yAxis = new NumberAxis();
-//
-//        // Create the series for the chart
-//        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-//        // Add data points to the series
-//
-//        // Add the series to the chart
-//        timeChart.getData().add(series);
-//    }
+    private void populateSeries(ArrayList<AccelerationData> rawAccelerationData) {
+        // Update the series
+        for (AccelerationData accData: rawAccelerationData){
+            xSeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.x()));
+            ySeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.y()));
+            zSeriesTime.getData().add(new XYChart.Data<>(accData.time(), accData.z()));
+            double mag = Math.sqrt(accData.x() * accData.x() + accData.y() * accData.y() + accData.z() * accData.z());
+            magSeriesTime.getData().add(new XYChart.Data<>(accData.time(), mag));
+
+            // Get Fourier Series
+
+        }
+    }
 //
 //    private void populateChart2() {
 //        // Similar logic as populateChart1
