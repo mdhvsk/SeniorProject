@@ -30,6 +30,8 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        MainController controller = loader.getController();
+        controller.setPrimaryStage(primaryStage);
     }
     @Override
     public void stop(){

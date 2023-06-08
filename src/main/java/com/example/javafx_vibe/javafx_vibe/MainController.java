@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.*;
 
@@ -25,9 +27,13 @@ import java.io.*;
 
 public class MainController implements Initializable
 {
+    private Stage primaryStage; // Add this field to hold the reference to the primaryStage
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
     private static boolean stopFlag = false;
-    @FXML
-    private MenuItem Exit;
+
     private static SerialPort comPort;
 
     @FXML
@@ -37,7 +43,10 @@ public class MainController implements Initializable
     private Button btnStop;
 
     @FXML
-    private Button btnChart;
+    private Button btn_downloadCSV;
+
+    @FXML
+    private Button btn_plotData;
 
 
     @FXML
@@ -149,6 +158,53 @@ public class MainController implements Initializable
         outputStream1.write(customOutput.getBytes());
         outputStream1.flush();
     }
+    @FXML
+    void handle_downloadCSV(ActionEvent event) {
+        // Open a file chooser dialog to select the download location
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            // Write the CSV data to the selected file
+            try {
+                FileWriter writer = new FileWriter(file);
+                writer.write("accelerometer_data.csv"); // Replace with the actual CSV data generated
+                writer.close();
+                System.out.println("CSV file downloaded successfully.");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Failed to download CSV file.");
+            }
+        }
+    }
+
+    @FXML
+    void handle_plotData(ActionEvent event) {
+        try {
+            // Replace "pythonScript.py" with the actual filename of your Python script
+            String pythonScript = "plotAccelerationData.py";
+
+            // Build the command to execute the Python script
+            String command = "python " + pythonScript;
+
+            // Execute the Python script
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.directory(new File(System.getProperty("user.dir")));
+            Process process = processBuilder.start();
+
+            // Wait for the Python script to complete
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Python script executed successfully");
+            } else {
+                System.out.println("Python script execution failed");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     void setComPort(SerialPort comPort){
@@ -179,6 +235,9 @@ public class MainController implements Initializable
     {
         this.currentIntensityValue = currentIntensityValue;
     }
+
+
+
 }
 
 
