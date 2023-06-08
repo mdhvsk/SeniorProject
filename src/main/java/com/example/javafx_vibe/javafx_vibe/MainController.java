@@ -94,6 +94,8 @@ public class MainController implements Initializable
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 while (!stopFlag) {
+                    // Wait for a small delay before reading the next line of data
+                    Thread.sleep(33); // Adjust the delay value as needed
                     // Process the line of data (e.g., split it into x, y, z values)
                     var line = bufferedReader.readLine();
                     System.out.println(line);
@@ -111,6 +113,8 @@ public class MainController implements Initializable
                 csvWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
         dataThread.start();
