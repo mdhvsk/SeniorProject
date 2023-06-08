@@ -44,7 +44,7 @@ public class MainController implements Initializable
     private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
     @FXML
     private MenuItem Exit;
-    private SerialPort comPort;
+    private static SerialPort comPort;
 
     @FXML
     private Button btnStart;
@@ -101,53 +101,53 @@ public class MainController implements Initializable
         handleMotorStart();
     }
 
-    @FXML
-    void handle_btnStop(ActionEvent event) throws IOException
-    {
-        System.out.println("\nStop button clicked");
-        stopFlag = true;
-
-        OutputStream outputStream1 = comPort.getOutputStream();
-        String customOutput = "t";
-//        String output = "s:3:1";
-        outputStream1.write(customOutput.getBytes());
-        outputStream1.flush();
-
-        SerialPort comPort = ArduinoUtils.findArduinoPort();
-        setComPort(comPort);
-
-        String filePath = "accelerometer_data.csv";
-        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
-
-        long startTime = System.currentTimeMillis();
-
-        Thread dataThread = new Thread(() -> {
-            try {
-                InputStream inputStream = comPort.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                while (!stopFlag) {
-                    // Process the line of data (e.g., split it into x, y, z values)
-                    var line = bufferedReader.readLine();
-                    System.out.println(line);
-                    long currentTime = System.currentTimeMillis();
-                    double elapsedTime = (double) (currentTime - startTime) / 1000;
-                    try {
-                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
-                        csvWriter.writeNext(accelerationData.toCsvStrings());
-                    } catch (Exception e) {
-                        System.out.println("Failed to parse arduino data: " + e);
-                    }
-                }
-                inputStream.close();
-                inputStreamReader.close();
-                csvWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        dataThread.start();
-    }
+//    @FXML
+//    void handle_btnStop(ActionEvent event) throws IOException
+//    {
+//        System.out.println("\nStop button clicked");
+//        stopFlag = true;
+//
+//        OutputStream outputStream1 = comPort.getOutputStream();
+//        String customOutput = "t";
+////        String output = "s:3:1";
+//        outputStream1.write(customOutput.getBytes());
+//        outputStream1.flush();
+//
+//        SerialPort comPort = ArduinoUtils.findArduinoPort();
+//        setComPort(comPort);
+//
+//        String filePath = "accelerometer_data.csv";
+//        CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
+//
+//        long startTime = System.currentTimeMillis();
+//
+//        Thread dataThread = new Thread(() -> {
+//            try {
+//                InputStream inputStream = comPort.getInputStream();
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//                while (!stopFlag) {
+//                    // Process the line of data (e.g., split it into x, y, z values)
+//                    var line = bufferedReader.readLine();
+//                    System.out.println(line);
+//                    long currentTime = System.currentTimeMillis();
+//                    double elapsedTime = (double) (currentTime - startTime) / 1000;
+//                    try {
+//                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
+//                        csvWriter.writeNext(accelerationData.toCsvStrings());
+//                    } catch (Exception e) {
+//                        System.out.println("Failed to parse arduino data: " + e);
+//                    }
+//                }
+//                inputStream.close();
+//                inputStreamReader.close();
+//                csvWriter.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        dataThread.start();
+//    }
 
     @FXML
     void handle_btnStop(ActionEvent event) throws IOException {
