@@ -38,12 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class MainController implements Initializable
 {
     private boolean stopFlag = false;
-    private DataController dataController;
     private SerialPort comPort;
-    private ScheduledExecutorService scheduledExecutorService;
-
-    @FXML
-    private MenuItem Exit;
 
     @FXML
     private Button btnStart;
@@ -54,16 +49,7 @@ public class MainController implements Initializable
     @FXML
     private Button btnChart;
 
-    @FXML
-    private MenuItem menuCustom;
 
-    @FXML
-    private MenuItem menuPreset1;
-
-    @FXML
-    private ProgressBar progress;
-
-=======
     @FXML
     private Spinner<Integer> time;
     @FXML
@@ -77,27 +63,20 @@ public class MainController implements Initializable
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1){
-        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
-        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
-        timeValueFactory.setValue(0);
-        time.setValueFactory(timeValueFactory);
-        time.valueProperty().addListener((observableValue, integer, t1) -> setCurrentTimeValue(time.getValue()));
-        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
-        timeValueFactory.setValue(0);
-        intensity.setValueFactory(intensityValueFactory);
-        intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
-        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
-        comPort.openPort();
+//        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
+//        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
+//        timeValueFactory.setValue(0);
+//        time.setValueFactory(timeValueFactory);
+//        time.valueProperty().addListener((observableValue, integer, t1) -> setCurrentTimeValue(time.getValue()));
+//        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
+//        timeValueFactory.setValue(0);
+//        intensity.setValueFactory(intensityValueFactory);
+//        intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
+//        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
+//        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
+//        comPort.openPort();
     }
 
-    @FXML
-    private LineChart<Number, Number> accChart;
-
-    @FXML
-    void handle_Exit(ActionEvent event) {
-
-    }
 
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
@@ -150,11 +129,12 @@ public class MainController implements Initializable
         try {
 //            FXMLLoader loader = new FXMLLoader(getClass().getResource("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/chart.fxml"));
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(new URL("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/charts.fxml"));
+            URL url = new File("src/main/resources/com/example/javafx_vibe/charts.fxml").toURI().toURL();
+            loader.setLocation(url);
             AnchorPane pane = loader.load();
 
             DataController dataController = loader.getController();
-            dataController.parseData("C:\\Users\\Owner\\Code\\javafx_vibe\\accelerometer_data.csv");
+            dataController.parseData("accelerometer_data.csv");
 
             Stage stage = new Stage();
             stage.setScene(new Scene(pane));
