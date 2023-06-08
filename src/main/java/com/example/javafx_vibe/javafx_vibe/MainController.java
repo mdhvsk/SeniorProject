@@ -37,14 +37,10 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class MainController implements Initializable
 {
-    private boolean stopFlag = false;
-    private ScheduledExecutorService scheduledExecutorService;
-    private XYChart.Series<Number, Number> xSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> ySeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> zSeries = new XYChart.Series<>();
+    private static boolean stopFlag = false;
     @FXML
     private MenuItem Exit;
-    private SerialPort comPort;
+    private static SerialPort comPort;
 
     @FXML
     private Button btnStart;
@@ -99,20 +95,6 @@ public class MainController implements Initializable
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
         handleMotorStart();
-    }
-
-    @FXML
-    void handle_btnStop(ActionEvent event) throws IOException
-    {
-        System.out.println("\nStop button clicked");
-        stopFlag = true;
-
-        OutputStream outputStream1 = comPort.getOutputStream();
-        String customOutput = "t";
-//        String output = "s:3:1";
-        outputStream1.write(customOutput.getBytes());
-        outputStream1.flush();
-
         SerialPort comPort = ArduinoUtils.findArduinoPort();
         setComPort(comPort);
 
@@ -157,33 +139,13 @@ public class MainController implements Initializable
     void handle_btnStop(ActionEvent event) throws IOException {
         System.out.println("\nStop button clicked");
         stopFlag = true;
-        comPort.closePort();
+
+        OutputStream outputStream1 = comPort.getOutputStream();
+        String customOutput = "t";
+//        String output = "s:3:1";
+        outputStream1.write(customOutput.getBytes());
+        outputStream1.flush();
     }
-
-
-    @FXML
-    void handle_btnChart(ActionEvent event) {
-        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("file:///C:/Users/Owner/Code/javafx_vibe/src/main/resources/com/example/javafx_vibe/chart.fxml"));
-            FXMLLoader loader = new FXMLLoader();
-            URL url = new File("src/main/resources/com/example/javafx_vibe/charts.fxml").toURI().toURL();
-            loader.setLocation(url);
-            AnchorPane pane = loader.load();
-
-            DataController dataController = loader.getController();
-            dataController.parseData("accelerometer_data.csv");
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(pane));
-            stage.setTitle("Data Visualization");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @FXML
     void handleMotorStart() throws IOException
@@ -200,16 +162,6 @@ public class MainController implements Initializable
         outputStream1.flush();
     }
 
-
-    @FXML
-    void handle_menuCustom(ActionEvent event) {
-
-    }
-
-    @FXML
-    void handle_menuPreset1(ActionEvent event) {
-
-    }
 
     void setComPort(SerialPort comPort){
         this.comPort = comPort;
