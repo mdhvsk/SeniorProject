@@ -1,6 +1,5 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import java.util.ArrayList;
 
 public record AccelerationData(double x, double y, double z, double time) {
     public String[] toCsvStrings() {

@@ -1,18 +1,10 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
 import java.io.FileWriter;
 import java.io.IOException;
 import com.opencsv.CSVWriter;
@@ -20,17 +12,13 @@ import com.opencsv.CSVWriter;
 import java.net.URL;
 
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.fazecast.jSerialComm.SerialPort;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
 import java.io.*;
-import java.util.concurrent.ScheduledExecutorService;
+
 
 
 

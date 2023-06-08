@@ -1,6 +1,5 @@
 package com.example.javafx_vibe.javafx_vibe;
 
-import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
