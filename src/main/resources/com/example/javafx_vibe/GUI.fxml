@@ -22,6 +22,7 @@
                         <Font size="24.0" />
                      </font></Button>
                   <Button fx:id="btnStop" layoutX="97.0" layoutY="520.0" mnemonicParsing="false" onAction="#handle_btnStop" prefHeight="74.0" prefWidth="250.0" style="-fx-background-color: #c41010;" text="Stop" AnchorPane.leftAnchor="97.0" AnchorPane.rightAnchor="98.0">
+
                      <font>
                         <Font size="24.0" />
                      </font></Button>
@@ -46,6 +47,7 @@
                         <Image url="@../../../../../../../../Downloads/recycle.png" />
                      </image>
                   </ImageView>
+                  <Button fx:id="btnChart" layoutX="181.0" layoutY="592.0" mnemonicParsing="false" onAction="#handle_btnChart" prefHeight="58.0" prefWidth="118.0" text="Chart Data" />
                </children>
             </AnchorPane>
         </items>
