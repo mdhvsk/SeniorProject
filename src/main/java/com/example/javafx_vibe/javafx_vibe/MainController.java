@@ -11,6 +11,9 @@ import com.opencsv.CSVWriter;
 
 import java.net.URL;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ResourceBundle;
 
 import com.fazecast.jSerialComm.SerialPort;
@@ -62,7 +65,9 @@ public class MainController implements Initializable
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1){
-        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
+        SerialPort comPort = ArduinoUtils.findArduinoPort();
+        setComPort(comPort);
+//        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
         SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 240);
         timeValueFactory.setValue(0);
         time.setValueFactory(timeValueFactory);
@@ -71,20 +76,8 @@ public class MainController implements Initializable
         timeValueFactory.setValue(0);
         intensity.setValueFactory(intensityValueFactory);
         intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
-        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
-        comPort.openPort();
-//        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
-//        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
-//        timeValueFactory.setValue(0);
-//        time.setValueFactory(timeValueFactory);
-//        time.valueProperty().addListener((observableValue, integer, t1) -> setCurrentTimeValue(time.getValue()));
-//        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
-//        timeValueFactory.setValue(0);
-//        intensity.setValueFactory(intensityValueFactory);
-//        intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
 //        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
-//        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
+        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
 //        comPort.openPort();
     }
 
@@ -92,8 +85,7 @@ public class MainController implements Initializable
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
         handleMotorStart();
-        SerialPort comPort = ArduinoUtils.findArduinoPort();
-        setComPort(comPort);
+
 
         String filePath = "accelerometer_data.csv";
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
@@ -161,15 +153,18 @@ public class MainController implements Initializable
     @FXML
     void handle_downloadCSV(ActionEvent event) {
         // Open a file chooser dialog to select the download location
+        // Get the path of the CSV file
+        String csvFilePath = "accelerometer_data.csv";
+
+        // Open a file chooser dialog to select the download location
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        fileChooser.setInitialFileName("accelerometer_data.csv"); // Set the initial file name
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            // Write the CSV data to the selected file
+            // Copy the CSV file to the selected download location
             try {
-                FileWriter writer = new FileWriter(file);
-                writer.write("accelerometer_data.csv"); // Replace with the actual CSV data generated
-                writer.close();
+                Files.copy(Paths.get(csvFilePath), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("CSV file downloaded successfully.");
             } catch (IOException e) {
                 e.printStackTrace();

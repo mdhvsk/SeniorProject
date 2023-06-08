@@ -1,3 +1,8 @@
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+
+Adafruit_MPU6050 mpu;
 const int pwmPin = 2;
 boolean flagPWM; 
 
@@ -106,7 +111,26 @@ void setup() { // put your setup code here, to run once:
   pinMode(pwmPin, OUTPUT);
   pinMode(53,OUTPUT);
   pinMode(52,OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(115200);
+
+	// Try to initialize!
+	if (!mpu.begin()) {
+		Serial.println("Failed to find MPU6050 chip");
+		while (1) {
+		  delay(10);
+		}
+	}
+
+	// set accelerometer range to +-8G
+	mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+
+	// set gyro range to +- 500 deg/s
+	mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+
+	// set filter bandwidth to 21 Hz
+	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+
+	delay(100);
 
 }
 
@@ -193,5 +217,14 @@ void loop () {
     digitalWrite(53,LOW);
     digitalWrite(52,HIGH);
   }
+
+  sensors_event_t a, g, temp;
+	mpu.getEvent(&a, &g, &temp);
+  Serial.print(a.acceleration.x);
+  Serial.print(",");
+  Serial.print(a.acceleration.y);
+  Serial.print(",");
+  Serial.print(a.acceleration.z);
+  Serial.println("");
 
 }
