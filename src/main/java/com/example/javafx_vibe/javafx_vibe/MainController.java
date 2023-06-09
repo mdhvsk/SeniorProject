@@ -95,6 +95,7 @@ public class MainController implements Initializable
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 while (!stopFlag) {
                     // Process the line of data (e.g., split it into x, y, z values)
+                    Thread.sleep(33);
                     var line = bufferedReader.readLine();
                     System.out.println(line);
                     long currentTime = System.currentTimeMillis();
@@ -111,6 +112,8 @@ public class MainController implements Initializable
                 csvWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
         dataThread.start();
