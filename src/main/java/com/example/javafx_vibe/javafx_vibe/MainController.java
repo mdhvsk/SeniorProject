@@ -1,5 +1,6 @@
 package com.example.javafx_vibe.javafx_vibe;
 
+import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -85,44 +86,84 @@ public class MainController implements Initializable
     void handle_btnStart(ActionEvent event) throws IOException {
         handleMotorStart();
 
-
         String filePath = "accelerometer_data.csv";
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
 
         long startTime = System.currentTimeMillis();
 
         Thread dataThread = new Thread(() -> {
+            boolean dataReceived = false;
             try {
                 InputStream inputStream = comPort.getInputStream();
+                Thread.sleep(1000);
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String line = null;
                 while (!stopFlag) {
-                    // Wait for a small delay before reading the next line of data
-                    Thread.sleep(33); // Adjust the delay value as needed
-                    // Process the line of data (e.g., split it into x, y, z values)
-                    var line = bufferedReader.readLine();
-                    System.out.println(line);
+                    try {
+                        line = bufferedReader.readLine();
+                        if (line == null) {
+                            // Handle read timeout (no data received)
+                            // Add your recovery mechanism here
+                            dataReceived = false;
+                        } else {
+                            // Process the received line of data
+                            System.out.println(line);
+                            // ...
+                            dataReceived = true;
+                        }
+                    } catch (SerialPortTimeoutException e) {
+                        // Handle read timeout exception
+                        // Add your recovery mechanism here
+                        // You can log the error or take other appropriate actions
+                        dataReceived = false;
+                    } catch (IOException e) {
+                        // Handle other IO exceptions
+                        e.printStackTrace();
+                        // Add your recovery mechanism here
+                        // You can log the error or take other appropriate actions
+                        dataReceived = false;
+                    }
+
+                    // Wait for the next data cycle before trying to read again
+                    try {
+                        Thread.sleep(33); // Adjust the delay value as needed
+                    } catch (InterruptedException e) {
+                        // Handle the interrupt exception
+                        e.printStackTrace();
+                        // Add your recovery mechanism here
+                        // You can log the error or take other appropriate actions
+                    }
+
+                    // If no data was received in the previous cycle, continue to the next iteration of the loop
+                    if (!dataReceived) {
+                        continue;
+                    }
+
+                    // Continue with the remaining code for processing the received data
                     long currentTime = System.currentTimeMillis();
                     double elapsedTime = (double) (currentTime - startTime) / 1000;
                     try {
                         var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
                         csvWriter.writeNext(accelerationData.toCsvStrings());
                     } catch (Exception e) {
-                        System.out.println("Failed to parse arduino data: " + e);
+                        System.out.println("Failed to parse Arduino data: " + e);
                     }
                 }
-                inputStream.close();
-                inputStreamReader.close();
-                csvWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            } finally {
+                // Close the CSV writer when finished
+                try {
+                    csvWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
+
         dataThread.start();
     }
-
     @FXML
     void handle_btnStop(ActionEvent event) throws IOException {
         System.out.println("\nStop button clicked");
@@ -185,7 +226,7 @@ public class MainController implements Initializable
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             processBuilder.directory(new File(System.getProperty("user.dir")));
             Process process = processBuilder.start();
-
+            //Process p = Runtime.getRuntime().exec(command);
             // Wait for the Python script to complete
             int exitCode = process.waitFor();
             if (exitCode == 0) {

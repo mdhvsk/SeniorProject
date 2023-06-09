@@ -3,6 +3,8 @@
 #include <Wire.h>
 
 Adafruit_MPU6050 mpu;
+#define INTERVAL 5000
+uint32_t lastMicros = 0; 
 const int pwmPin = 2;
 boolean flagPWM; 
 
@@ -42,7 +44,7 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   //   digitalWrite(53,HIGH);
   //   digitalWrite(52,LOW);
   // }
-  
+
 // 10 second ramp up run
   if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis <= 10000) {
     // Set PWM signal ON with specified duty cycle
@@ -56,7 +58,7 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   //   digitalWrite(53,HIGH);
   //   digitalWrite(52,LOW);
   // }
- 
+
   //   if(onTime - elapsedMillis < 10000){
   //   analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
   //   digitalWrite(53,HIGH);
@@ -112,8 +114,7 @@ void setup() { // put your setup code here, to run once:
   pinMode(53,OUTPUT);
   pinMode(52,OUTPUT);
   Serial.begin(115200);
-
-	// Try to initialize!
+  	// Try to initialize!
 	if (!mpu.begin()) {
 		Serial.println("Failed to find MPU6050 chip");
 		while (1) {
@@ -130,11 +131,27 @@ void setup() { // put your setup code here, to run once:
 	// set filter bandwidth to 21 Hz
 	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
-	delay(100);
-
 }
 
 void loop () {
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  // Serial.print(a.acceleration.x);
+  // Serial.print(",");
+  // Serial.print(a.acceleration.y);
+  // Serial.print(",");
+  // Serial.print(a.acceleration.z);
+  // Serial.println("");
+  if (micros() - lastMicros > INTERVAL) {
+    lastMicros = micros(); // do this first or your interval is too long!
+    Serial.print(a.acceleration.x);
+    Serial.print(",");
+    Serial.print(a.acceleration.y);
+    Serial.print(",");
+    Serial.print(a.acceleration.z);
+    Serial.println("");
+  }
+
   if(Serial.available() > 0 ){
         incomingString = Serial.readString();
 
@@ -190,7 +207,7 @@ void loop () {
       digitalWrite(52,HIGH);
       return;
     }
-    
+
     intensityIndex++; // changes intensity 
   // Turn on motor if input given or if new cycle starts
      motorRunning = true; //continues generatePWM
@@ -217,14 +234,5 @@ void loop () {
     digitalWrite(53,LOW);
     digitalWrite(52,HIGH);
   }
-
-  sensors_event_t a, g, temp;
-	mpu.getEvent(&a, &g, &temp);
-  Serial.print(a.acceleration.x);
-  Serial.print(",");
-  Serial.print(a.acceleration.y);
-  Serial.print(",");
-  Serial.print(a.acceleration.z);
-  Serial.println("");
 
 }
