@@ -77,7 +77,6 @@ public class MainController implements Initializable
         intensity.setValueFactory(intensityValueFactory);
         intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
 //        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
 //        comPort.openPort();
     }
 

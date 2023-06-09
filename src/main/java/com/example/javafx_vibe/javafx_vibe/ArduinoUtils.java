@@ -17,6 +17,7 @@ public class ArduinoUtils {
                 try{port.openPort();
                     port.setComPortParameters(115200, 8, 1, SerialPort.NO_PARITY);
                     port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+                    port.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
                     System.out.println("Connected to Arduino on port: " + port.getSystemPortName());
                     // You can perform further operations with the opened port here
                     return port; // Exit the loop after finding the Arduino
