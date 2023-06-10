@@ -60,6 +60,9 @@ public class MainController implements Initializable
     private int currentTimeValue;
     private int currentIntensityValue;
 
+    Object lock = new Object();
+
+
 //    Mac version
 //    protected static SerialPort macArduinoPort = SerialPort.getCommPort("/dev/tty.usbserial-1130");
 //    protected static SerialPort macArduinoPort = SerialPort.getCommPort("/dev/tty.usbmodem11301");
@@ -84,85 +87,95 @@ public class MainController implements Initializable
 
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
-        handleMotorStart();
+        synchronized (lock) {
+            handleMotorStart();
+            stopFlag = false;
+        }
+
+
 
         String filePath = "accelerometer_data.csv";
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
 
         long startTime = System.currentTimeMillis();
 
-        Thread dataThread = new Thread(() -> {
-            boolean dataReceived = false;
-            try {
-                InputStream inputStream = comPort.getInputStream();
-                Thread.sleep(1000);
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String line = null;
-                while (!stopFlag) {
-                    try {
-                        line = bufferedReader.readLine();
-                        if (line == null) {
-                            // Handle read timeout (no data received)
-                            // Add your recovery mechanism here
-                            dataReceived = false;
-                        } else {
-                            // Process the received line of data
-                            System.out.println(line);
-                            // ...
-                            dataReceived = true;
-                        }
-                    } catch (SerialPortTimeoutException e) {
-                        // Handle read timeout exception
-                        // Add your recovery mechanism here
-                        // You can log the error or take other appropriate actions
-                        dataReceived = false;
-                    } catch (IOException e) {
-                        // Handle other IO exceptions
-                        e.printStackTrace();
-                        // Add your recovery mechanism here
-                        // You can log the error or take other appropriate actions
-                        dataReceived = false;
-                    }
+//        Thread dataThread = new Thread(() -> {
+//            System.out.println("New thread execution begins");
+//            boolean dataReceived = false;
+//                try {
+//                    InputStream inputStream = comPort.getInputStream();
+//                    Thread.sleep(1000);
+//                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//                    String line = null;
+//                    while (!stopFlag) {
+//                        try {
+//                            line = bufferedReader.readLine();
+//                            if (line == null) {
+//                                // Handle read timeout (no data received)
+//                                // Add your recovery mechanism here
+//                                dataReceived = false;
+//                            } else {
+//                                // Process the received line of data
+//                                System.out.println(line);
+//                                // ...
+//                                dataReceived = true;
+//                            }
+//                        } catch (SerialPortTimeoutException e) {
+//                            // Handle read timeout exception
+//                            // Add your recovery mechanism here
+//                            // You can log the error or take other appropriate actions
+//                            dataReceived = false;
+//                        } catch (IOException e) {
+//                            // Handle other IO exceptions
+//                            e.printStackTrace();
+//                            // Add your recovery mechanism here
+//                            // You can log the error or take other appropriate actions
+//                            dataReceived = false;
+//                        }
+//
+//                        // Wait for the next data cycle before trying to read again
+//                        try {
+//                            Thread.sleep(33); // Adjust the delay value as needed
+//                        } catch (InterruptedException e) {
+//                            // Handle the interrupt exception
+//                            e.printStackTrace();
+//                            // Add your recovery mechanism here
+//                            // You can log the error or take other appropriate actions
+//                        }
+//
+//                        // If no data was received in the previous cycle, continue to the next iteration of the loop
+//                        if (!dataReceived) {
+//                            continue;
+//                        }
+//
+//                        // Continue with the remaining code for processing the received data
+//                        long currentTime = System.currentTimeMillis();
+//                        double elapsedTime = (double) (currentTime - startTime) / 1000;
+//                        try {
+//                            var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
+//                            csvWriter.writeNext(accelerationData.toCsvStrings());
+//                        } catch (Exception e) {
+//                            System.out.println("Failed to parse Arduino data: " + e);
+//                        }
+//                    }
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                } finally {
+//                    // Close the CSV writer when finished
+//                    try {
+//                        csvWriter.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//
+//        });
+//
+//        dataThread.start();
+        System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
 
-                    // Wait for the next data cycle before trying to read again
-                    try {
-                        Thread.sleep(33); // Adjust the delay value as needed
-                    } catch (InterruptedException e) {
-                        // Handle the interrupt exception
-                        e.printStackTrace();
-                        // Add your recovery mechanism here
-                        // You can log the error or take other appropriate actions
-                    }
-
-                    // If no data was received in the previous cycle, continue to the next iteration of the loop
-                    if (!dataReceived) {
-                        continue;
-                    }
-
-                    // Continue with the remaining code for processing the received data
-                    long currentTime = System.currentTimeMillis();
-                    double elapsedTime = (double) (currentTime - startTime) / 1000;
-                    try {
-                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
-                        csvWriter.writeNext(accelerationData.toCsvStrings());
-                    } catch (Exception e) {
-                        System.out.println("Failed to parse Arduino data: " + e);
-                    }
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } finally {
-                // Close the CSV writer when finished
-                try {
-                    csvWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        dataThread.start();
     }
     @FXML
     void handle_btnStop(ActionEvent event) throws IOException {

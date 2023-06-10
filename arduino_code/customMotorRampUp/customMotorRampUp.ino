@@ -1,10 +1,10 @@
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
-#include <Wire.h>
+// #include <Adafruit_MPU6050.h>
+// #include <Adafruit_Sensor.h>
+// #include <Wire.h>
 
-Adafruit_MPU6050 mpu;
-#define INTERVAL 5000
-uint32_t lastMicros = 0; 
+// Adafruit_MPU6050 mpu;
+// #define INTERVAL 5000
+// uint32_t lastMicros = 0; 
 const int pwmPin = 2;
 boolean flagPWM; 
 
@@ -46,7 +46,7 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   // }
 
 // 10 second ramp up run
-  if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis <= 10000) {
+  if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis >= 10000) {
     // Set PWM signal ON with specified duty cycle
     analogWrite(pwmPin, duty * 255 / 100); // Convert duty cycle percentage to PWM value
     digitalWrite(53,HIGH);
@@ -59,11 +59,11 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   //   digitalWrite(52,LOW);
   // }
 
-  //   if(onTime - elapsedMillis < 10000){
-  //   analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
-  //   digitalWrite(53,HIGH);
-  //   digitalWrite(52,LOW);
-  // }
+    if(onTime - elapsedMillis < 10000){
+    analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
+    digitalWrite(53,HIGH);
+    digitalWrite(52,LOW);
+  }
 
   //   if(onTime - elapsedMillis < 60000){
   //   analogWrite(pwmPin, ((onTime-elapsedMillis)/60000) * duty * 255 / 100);
@@ -115,42 +115,42 @@ void setup() { // put your setup code here, to run once:
   pinMode(52,OUTPUT);
   Serial.begin(115200);
   	// Try to initialize!
-	if (!mpu.begin()) {
-		Serial.println("Failed to find MPU6050 chip");
-		while (1) {
-		  delay(10);
-		}
-	}
+// 	if (!mpu.begin()) {
+// 		Serial.println("Failed to find MPU6050 chip");
+// 		while (1) {
+// 		  delay(10);
+// 		}
+// 	}
 
-	// set accelerometer range to +-8G
-	mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+// 	// set accelerometer range to +-8G
+// 	mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
 
-	// set gyro range to +- 500 deg/s
-	mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+// 	// set gyro range to +- 500 deg/s
+// 	mpu.setGyroRange(MPU6050_RANGE_500_DEG);
 
-	// set filter bandwidth to 21 Hz
-	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+// 	// set filter bandwidth to 21 Hz
+// 	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
 }
 
 void loop () {
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  // Serial.print(a.acceleration.x);
-  // Serial.print(",");
-  // Serial.print(a.acceleration.y);
-  // Serial.print(",");
-  // Serial.print(a.acceleration.z);
-  // Serial.println("");
-  if (micros() - lastMicros > INTERVAL) {
-    lastMicros = micros(); // do this first or your interval is too long!
-    Serial.print(a.acceleration.x);
-    Serial.print(",");
-    Serial.print(a.acceleration.y);
-    Serial.print(",");
-    Serial.print(a.acceleration.z);
-    Serial.println("");
-  }
+  // sensors_event_t a, g, temp;
+  // mpu.getEvent(&a, &g, &temp);
+  // // Serial.print(a.acceleration.x);
+  // // Serial.print(",");
+  // // Serial.print(a.acceleration.y);
+  // // Serial.print(",");
+  // // Serial.print(a.acceleration.z);
+  // // Serial.println("");
+  // if (micros() - lastMicros > INTERVAL) {
+  //   lastMicros = micros(); // do this first or your interval is too long!
+  //   Serial.print(a.acceleration.x);
+  //   Serial.print(",");
+  //   Serial.print(a.acceleration.y);
+  //   Serial.print(",");
+  //   Serial.print(a.acceleration.z);
+  //   Serial.println("");
+  // }
 
   if(Serial.available() > 0 ){
         incomingString = Serial.readString();
