@@ -37,9 +37,9 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   //   digitalWrite(53,HIGH);
   //   digitalWrite(52,LOW);
   // }
-  
+
 // 10 second ramp up run
-  if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis <= 10000) {
+  if (elapsedMillis <= onTime && elapsedMillis >= 10000 && onTime - elapsedMillis >= 10000) {
     // Set PWM signal ON with specified duty cycle
     analogWrite(pwmPin, duty * 255 / 100); // Convert duty cycle percentage to PWM value
     digitalWrite(53,HIGH);
@@ -51,12 +51,12 @@ void generatePWM(unsigned long onTime, unsigned long offTime, int duty ){
   //   digitalWrite(53,HIGH);
   //   digitalWrite(52,LOW);
   // }
- 
-  //   if(onTime - elapsedMillis < 10000){
-  //   analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
-  //   digitalWrite(53,HIGH);
-  //   digitalWrite(52,LOW);
-  // }
+
+    if(onTime - elapsedMillis < 10000){
+    analogWrite(pwmPin, ((onTime-elapsedMillis)/10000) * duty * 255 / 100);
+    digitalWrite(53,HIGH);
+    digitalWrite(52,LOW);
+  }
 
   //   if(onTime - elapsedMillis < 60000){
   //   analogWrite(pwmPin, ((onTime-elapsedMillis)/60000) * duty * 255 / 100);
@@ -166,7 +166,7 @@ void loop () {
       digitalWrite(52,HIGH);
       return;
     }
-    
+
     intensityIndex++; // changes intensity 
   // Turn on motor if input given or if new cycle starts
      motorRunning = true; //continues generatePWM
