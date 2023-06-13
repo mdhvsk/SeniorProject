@@ -69,9 +69,25 @@ public class MainController implements Initializable
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1){
-        SerialPort comPort = ArduinoUtils.findArduinoPort();
-        setComPort(comPort);
-//        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
+        SerialPort[] portList = SerialPort.getCommPorts();
+        System.out.print(portList[0].getPortDescription());
+        String arduinoDescription = "Arduino";
+
+        for (SerialPort port : portList) {
+
+            System.out.println(port.getSystemPortName() + ": " + port.getDescriptivePortName());
+            String portDescription = port.getPortDescription();
+            if (portDescription.contains(arduinoDescription)) {
+                // Try to open the port
+                try{port.openPort();
+                    System.out.println("Connected to Arduino on port: " + port.getSystemPortName());
+                    setComPort(port);
+                    // You can perform further operations with the opened port here
+                } catch(Exception e) {
+                    System.out.println("Failed to open port: " + port.getSystemPortName());
+                }
+            }
+        }
         SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 240);
         timeValueFactory.setValue(0);
         time.setValueFactory(timeValueFactory);
@@ -80,17 +96,28 @@ public class MainController implements Initializable
         timeValueFactory.setValue(0);
         intensity.setValueFactory(intensityValueFactory);
         intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
+        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
+        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
+        comPort.openPort();
+//        setComPort(SerialPort.getCommPort("/dev/tty.usbmodem11301"));
+//        SpinnerValueFactory<Integer> timeValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120);
+//        timeValueFactory.setValue(0);
+//        time.setValueFactory(timeValueFactory);
+//        time.valueProperty().addListener((observableValue, integer, t1) -> setCurrentTimeValue(time.getValue()));
+//        SpinnerValueFactory<Integer> intensityValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100);
+//        timeValueFactory.setValue(0);
+//        intensity.setValueFactory(intensityValueFactory);
+//        intensity.valueProperty().addListener((observableValue, integer, t1) -> setCurrentIntensityValue(intensity.getValue()));
 //        comPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
+//        comPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0,0 );
 //        comPort.openPort();
     }
 
 
     @FXML
     void handle_btnStart(ActionEvent event) throws IOException {
-        synchronized (lock) {
-            handleMotorStart();
-            stopFlag = false;
-        }
+        handleMotorStart();
+        stopFlag = false;
 
 
 
@@ -99,82 +126,36 @@ public class MainController implements Initializable
 
         long startTime = System.currentTimeMillis();
 
-//        Thread dataThread = new Thread(() -> {
-//            System.out.println("New thread execution begins");
-//            boolean dataReceived = false;
-//                try {
-//                    InputStream inputStream = comPort.getInputStream();
-//                    Thread.sleep(1000);
-//                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//                    String line = null;
-//                    while (!stopFlag) {
-//                        try {
-//                            line = bufferedReader.readLine();
-//                            if (line == null) {
-//                                // Handle read timeout (no data received)
-//                                // Add your recovery mechanism here
-//                                dataReceived = false;
-//                            } else {
-//                                // Process the received line of data
-//                                System.out.println(line);
-//                                // ...
-//                                dataReceived = true;
-//                            }
-//                        } catch (SerialPortTimeoutException e) {
-//                            // Handle read timeout exception
-//                            // Add your recovery mechanism here
-//                            // You can log the error or take other appropriate actions
-//                            dataReceived = false;
-//                        } catch (IOException e) {
-//                            // Handle other IO exceptions
-//                            e.printStackTrace();
-//                            // Add your recovery mechanism here
-//                            // You can log the error or take other appropriate actions
-//                            dataReceived = false;
-//                        }
-//
-//                        // Wait for the next data cycle before trying to read again
-//                        try {
-//                            Thread.sleep(33); // Adjust the delay value as needed
-//                        } catch (InterruptedException e) {
-//                            // Handle the interrupt exception
-//                            e.printStackTrace();
-//                            // Add your recovery mechanism here
-//                            // You can log the error or take other appropriate actions
-//                        }
-//
-//                        // If no data was received in the previous cycle, continue to the next iteration of the loop
-//                        if (!dataReceived) {
-//                            continue;
-//                        }
-//
-//                        // Continue with the remaining code for processing the received data
-//                        long currentTime = System.currentTimeMillis();
-//                        double elapsedTime = (double) (currentTime - startTime) / 1000;
-//                        try {
-//                            var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
-//                            csvWriter.writeNext(accelerationData.toCsvStrings());
-//                        } catch (Exception e) {
-//                            System.out.println("Failed to parse Arduino data: " + e);
-//                        }
-//                    }
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                } finally {
-//                    // Close the CSV writer when finished
-//                    try {
-//                        csvWriter.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//
-//        });
-//
-//        dataThread.start();
-        System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+        Thread dataThread = new Thread(() -> {
+            try {
+                InputStream inputStream = comPort.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                while (!stopFlag) {
+                    // Wait for a small delay before reading the next line of data
+                    Thread.sleep(33); // Adjust the delay value as needed
+                    // Process the line of data (e.g., split it into x, y, z values)
+                    var line = bufferedReader.readLine();
+                    System.out.println(line);
+                    long currentTime = System.currentTimeMillis();
+                    double elapsedTime = (double) (currentTime - startTime) / 1000;
+                    try {
+                        var accelerationData = AccelerationData.from_arduino(line, elapsedTime);
+                        csvWriter.writeNext(accelerationData.toCsvStrings());
+                    } catch (Exception e) {
+                        System.out.println("Failed to parse arduino data: " + e);
+                    }
+                }
+                inputStream.close();
+                inputStreamReader.close();
+                csvWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        dataThread.start();
 
     }
     @FXML
