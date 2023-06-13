@@ -47,7 +47,6 @@
                         <Image url="@../../../../../../../../Downloads/recycle.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="btnChart" layoutX="181.0" layoutY="592.0" mnemonicParsing="false" onAction="#handle_btnChart" prefHeight="58.0" prefWidth="118.0" text="Chart Data" />
                </children>
             </AnchorPane>
         </items>
